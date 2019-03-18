@@ -24,3 +24,13 @@ The context-menu contains all entries which were added in the "Send to"-Tab.
 In addition you can add new entries via the "Custom command..."-context-menu-entry.
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu.png)
+
+## Build
+
+This project was build using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
+* File -> Settings -> Editor -> GUI Designer -> Generate GUI into: Java source
+* File -> Settings -> Build, Execution, Deployment -> Compiler -> Build project automatically
+
+When the GUI is not updated correctly you may rebuild the project manually:
+* Build -> Rebuild Project
+
