@@ -27,7 +27,7 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ## Build
 
-This project was build using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
+This project was built using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
 * File -> Settings -> Editor -> GUI Designer -> Generate GUI into: Java source
 * File -> Settings -> Build, Execution, Deployment -> Compiler -> Build project automatically
 
