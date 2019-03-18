@@ -95,7 +95,7 @@ public class SendToTab {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    WebUtil.openWebpage(new URL("https://github.com/bytebutcher/burp-send-to-extension"));
+                    WebUtil.openWebpage(new URL("https://github.com/bytebutcher/burp-send-to"));
                 } catch (MalformedURLException e1) {
                     // Nothing to do here...
                 }
