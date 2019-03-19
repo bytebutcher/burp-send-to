@@ -135,7 +135,12 @@ public class SendToTab {
         );
     }
 
-    public void resetRunInTerminalOption() {
+    public void resetOptions() {
+        sendToTable.clearTable();
+        resetRunInTerminalOption();
+    }
+
+    private void resetRunInTerminalOption() {
         this.burpExtender.getConfig().resetRunInTerminalCommand();
         txtRunInTerminal.setText(this.burpExtender.getConfig().getRunInTerminalCommand());
     }

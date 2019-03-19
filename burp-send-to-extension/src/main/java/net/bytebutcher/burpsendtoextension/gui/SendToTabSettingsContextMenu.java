@@ -36,8 +36,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                 boolean result = DialogUtil.showConfirmationDialog(sendToTab.getParent(), "Reset \"Send to\"-options",
                         "Do you really want to reset the \"Send to\"-options?");
                 if (result) {
-                    sendToTable.clearTable();
-                    sendToTab.resetRunInTerminalOption();
+                    sendToTab.resetOptions();
                 }
             }
         });
