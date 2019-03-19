@@ -14,8 +14,6 @@ public class Config {
     private final IBurpExtenderCallbacks callbacks;
     private BurpExtender burpExtender;
 
-    private String runInTerminalSettingUnix;
-    private String runInTerminalSettingWindows;
     private String sendToTableData;
 
     public Config(BurpExtender burpExtender) {
@@ -43,22 +41,19 @@ public class Config {
 
     public String getRunInTerminalCommand() {
         if (OsUtils.isWindows()) {
-            if (runInTerminalSettingWindows == null) {
-                runInTerminalSettingWindows = this.callbacks.loadExtensionSetting("runInTerminalSettingWindows");
-                if (runInTerminalSettingWindows == null | runInTerminalSettingWindows.isEmpty()) {
-                    runInTerminalSettingWindows = "cmd  /c start cmd /K %C";
-                    this.callbacks.saveExtensionSetting("runInTerminalSettingWindows", runInTerminalSettingWindows);
-                }
-            }
-            return runInTerminalSettingWindows;
+            return getRunInTerminalCommand("runInTerminalSettingWindows", "cmd  /c start cmd /K %C");
         } else {
-            runInTerminalSettingUnix = this.callbacks.loadExtensionSetting("runInTerminalSettingUnix");
-            if (runInTerminalSettingUnix == null || runInTerminalSettingUnix.isEmpty()) {
-                runInTerminalSettingUnix = "xterm -hold -e %C";
-                this.callbacks.saveExtensionSetting("runInTerminalSettingUnix", runInTerminalSettingUnix);
-            }
-            return runInTerminalSettingUnix;
+            return getRunInTerminalCommand("runInTerminalSettingUnix", "xterm -hold -e %C");
         }
+    }
+
+    private String getRunInTerminalCommand(String label, String defaultValue) {
+        String runInTerminalSetting = this.callbacks.loadExtensionSetting(label);
+        if (runInTerminalSetting == null || runInTerminalSetting.isEmpty()) {
+            runInTerminalSetting = defaultValue;
+            this.callbacks.saveExtensionSetting(label, runInTerminalSetting);
+        }
+        return runInTerminalSetting;
     }
 
     public void setRunInTerminalCommand(String command) {
