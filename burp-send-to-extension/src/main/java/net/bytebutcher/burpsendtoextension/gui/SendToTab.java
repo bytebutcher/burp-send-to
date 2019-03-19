@@ -131,13 +131,6 @@ public class SendToTab {
                 "<p>%C = Command</p>" +
                 "</html>")
         );
-        loadSendToTableData();
-    }
-
-    private void loadSendToTableData() {
-        for (CommandObject commandObject : this.burpExtender.getConfig().getSendToTableData()) {
-            sendToTable.addCommandObject(commandObject);
-        }
     }
 
     /**
