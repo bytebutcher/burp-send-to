@@ -32,7 +32,6 @@ public class Config {
             }
             return new Gson().fromJson(sendToTableData, new TypeToken<List<CommandObject>>() {}.getType());
         } catch (Exception e) {
-
             return commandObjectList;
         }
     }
