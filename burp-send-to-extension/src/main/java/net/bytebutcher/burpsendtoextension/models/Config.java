@@ -36,6 +36,12 @@ public class Config {
         }
     }
 
+    public void resetRunInTerminalCommand() {
+        this.callbacks.saveExtensionSetting("runInTerminalSettingWindows", "cmd  /c start cmd /K %C");
+        this.callbacks.saveExtensionSetting("runInTerminalSettingUnix", "xterm -hold -e %C");
+
+    }
+
     public String getRunInTerminalCommand() {
         if (OsUtils.isWindows()) {
             return getRunInTerminalCommand("runInTerminalSettingWindows", "cmd  /c start cmd /K %C");

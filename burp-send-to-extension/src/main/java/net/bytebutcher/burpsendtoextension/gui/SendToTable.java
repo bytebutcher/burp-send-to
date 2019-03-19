@@ -181,6 +181,12 @@ public class SendToTable extends JTable {
         }
     }
 
+    public void clearTable() {
+        for (int row = this.getRowCount() - 1; row >= 0; row--) {
+            getDefaultModel().removeRow(row);
+        }
+    }
+
     public void moveSelectedRowUp() {
         moveRowBy(-1);
     }

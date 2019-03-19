@@ -23,11 +23,24 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
     private final JMenuItem saveOptions;
 
     private SendToTable sendToTable;
+    private SendToTab sendToTab;
 
-    public SendToTabSettingsContextMenu(final BurpExtender burpExtender, final SendToTable sendToTable) {
+    public SendToTabSettingsContextMenu(final BurpExtender burpExtender, final SendToTab sendToTab) {
         this.burpExtender = burpExtender;
-        this.sendToTable = sendToTable;
+        this.sendToTab = sendToTab;
+        this.sendToTable = sendToTab.getSendToTable();
         restoreDefaults = new JMenuItem("Restore defaults");
+        restoreDefaults.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean result = DialogUtil.showConfirmationDialog(sendToTab.getParent(), "Reset \"Send to\"-options",
+                        "Do you really want to reset the \"Send to\"-options?");
+                if (result) {
+                    sendToTable.clearTable();
+                    sendToTab.resetRunInTerminalOption();
+                }
+            }
+        });
         add(restoreDefaults);
         loadOptions = new JMenuItem("Load options");
         loadOptions.addActionListener(new ActionListener() {
@@ -45,7 +58,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                         sendToTable.addCommandObjects(commandObjectList);
                     } catch (FileNotFoundException e1) {
                         DialogUtil.showErrorDialog(
-                                getParent(),
+                                sendToTab.getParent(),
                                 "Error while loading options!",
                                 "<html><p>There was an unknown error while loading the options!</p>" +
                                         "<p>For more information check out the \"Send to\" extension error log!</p></html>"
@@ -73,7 +86,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                         out.write(json);
                     } catch (FileNotFoundException e1) {
                         DialogUtil.showErrorDialog(
-                                getParent(),
+                                sendToTab.getParent(),
                                 "Error while saving options!",
                                 "<html><p>There was an unknown error while saving the options!</p>" +
                                         "<p>For more information check out the \"Send to\" extension error log!</p></html>"

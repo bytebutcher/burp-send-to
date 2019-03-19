@@ -33,6 +33,7 @@ public class SendToTab {
     private JTextField txtRunInTerminal;
     private JButton btnRunInTerminalHelp;
     private SendToTableListener sendToTableListener;
+    private final SendToTabSettingsContextMenu sendToTabSettingsContextMenu;
 
 
     public SendToTab(final BurpExtender burpExtender) {
@@ -101,11 +102,12 @@ public class SendToTab {
                 }
             }
         });
+        sendToTabSettingsContextMenu = new SendToTabSettingsContextMenu(burpExtender, this);
         lblSettings.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                new SendToTabSettingsContextMenu(burpExtender, sendToTable).show(lblSettings, lblSettings.getX() + lblSettings.getWidth(), lblSettings.getY());
+                sendToTabSettingsContextMenu.show(lblSettings, lblSettings.getX() + lblSettings.getWidth(), lblSettings.getY());
             }
         });
         txtRunInTerminal.setText(this.burpExtender.getConfig().getRunInTerminalCommand());
@@ -131,6 +133,11 @@ public class SendToTab {
                 "<p>%C = Command</p>" +
                 "</html>")
         );
+    }
+
+    public void resetRunInTerminalOption() {
+        this.burpExtender.getConfig().resetRunInTerminalCommand();
+        txtRunInTerminal.setText(this.burpExtender.getConfig().getRunInTerminalCommand());
     }
 
     /**
