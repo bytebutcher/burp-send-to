@@ -25,6 +25,12 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu.png)
 
+## Save and load options
+
+Usually the options of the "Send to"-Tab is saved automatically. However, if you switch computers you may save and load your current options. This can be done by clicking on the gear-symbol in the upper-left corner of the "Send to"-Tab and select the appropriate context-menu-entry.
+
+![Burp-Send-To-Extension Options](images/burp-send-to-extension-options.png)
+
 ## Build
 
 This project was built using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
