@@ -1,6 +1,7 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.BurpExtender;
+import com.google.gson.Gson;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 
 import javax.swing.*;
@@ -16,12 +17,14 @@ public class SendToTableListener implements TableModelListener {
     private SendToTable sendToTable;
     private final JTable table;
     private final DefaultTableModel model;
+    private BurpExtender burpExtender;
     private List<CommandsChangeListener> commandsChangeListeners = new ArrayList<CommandsChangeListener>();
 
-    public SendToTableListener(JTable table, SendToTable sendToTable, BurpExtender burpExtender) {
+    SendToTableListener(JTable table, SendToTable sendToTable, BurpExtender burpExtender) {
         this.sendToTable = sendToTable;
         this.table = table;
-        this.model = sendToTable.getDefaultModel() ;
+        this.model = sendToTable.getDefaultModel();
+        this.burpExtender = burpExtender;
     }
 
     @Override
@@ -30,33 +33,34 @@ public class SendToTableListener implements TableModelListener {
         for (CommandsChangeListener commandsChangeListener : commandsChangeListeners) {
             commandsChangeListener.commandsChanged(commandObjects);
         }
+        this.burpExtender.getConfig().saveSendToTableData(new Gson().toJson(sendToTable.getCommandObjects()));
     }
 
-    public void onAddButtonClick(ActionEvent e, CommandObject commandObject) {
+    void onAddButtonClick(ActionEvent e, CommandObject commandObject) {
         sendToTable.addCommandObject(commandObject);
     }
 
-    public void onEditButtonClick(ActionEvent e, CommandObject commandObject) {
+    void onEditButtonClick(ActionEvent e, CommandObject commandObject) {
         sendToTable.editSelectedCommandObject(commandObject);
     }
 
-    public void onRemoveButtonClick(ActionEvent e) {
+    void onRemoveButtonClick(ActionEvent e) {
         sendToTable.removeSelectedRow();
     }
 
-    public void onUpButtonClick(ActionEvent e) {
+    void onUpButtonClick(ActionEvent e) {
         sendToTable.moveSelectedRowUp();
     }
 
-    public void onDownButtonClick(ActionEvent e) {
+    void onDownButtonClick(ActionEvent e) {
         sendToTable.moveSelectedRowDown();
     }
 
-    public void registerCommandsChangeLister(CommandsChangeListener commandsChangeListener) {
+    void registerCommandsChangeLister(CommandsChangeListener commandsChangeListener) {
         commandsChangeListeners.add(commandsChangeListener);
     }
 
-    public void onShowPreviewChannge(ActionEvent e, String commandId, boolean showPreview) {
+    void onShowPreviewChannge(ActionEvent e, String commandId, boolean showPreview) {
         CommandObject commandObject = sendToTable.getCommandObjectById(commandId);
         commandObject.setShowPreview(showPreview);
         sendToTable.editCommandObject(commandObject);

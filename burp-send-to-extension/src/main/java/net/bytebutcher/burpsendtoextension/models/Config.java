@@ -14,15 +14,13 @@ public class Config {
     private final IBurpExtenderCallbacks callbacks;
     private BurpExtender burpExtender;
 
-    private String sendToTableData;
-
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
         this.callbacks = burpExtender.getCallbacks();
     }
 
-    private void saveSendToTableData(IBurpExtenderCallbacks callbacks) {
-        callbacks.saveExtensionSetting("", "");
+    public void saveSendToTableData(String jsonData) {
+        this.callbacks.saveExtensionSetting("SendToTableData", jsonData);
     }
 
     public List<CommandObject> getSendToTableData() {
