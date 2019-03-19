@@ -27,7 +27,7 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ## Save and load options
 
-Usually the options of the "Send to"-Tab is saved automatically. However, if you switch computers you may save and load your current options. This can be done by clicking on the gear-symbol in the upper-left corner of the "Send to"-Tab and select the appropriate context-menu-entry.
+Usually the options of the "Send to"-Tab are saved automatically. However, if you switch computers you may save and load your current options. This can be done by clicking on the gear-symbol in the upper-left corner of the "Send to"-Tab and select the appropriate context-menu-entry.
 
 ![Burp-Send-To-Extension Options](images/burp-send-to-extension-options.png)
 
