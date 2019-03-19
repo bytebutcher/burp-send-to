@@ -5,6 +5,7 @@ import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
+import net.bytebutcher.burpsendtoextension.gui.util.ShellEscapeUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 
@@ -165,7 +166,7 @@ public class SendToContextMenu implements IContextMenuFactory {
             command = command.replace("%F", tmp.getAbsolutePath());
         }
         if (command.contains("%S")) {
-            command = command.replace("%S", this.selectedText);
+            command = command.replace("%S", "'" + ShellEscapeUtil.shellEscape(this.selectedText) + "'");
         }
         return command;
     }

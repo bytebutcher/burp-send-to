@@ -80,8 +80,8 @@ public class SendToAddDialog {
                 if (getCommand().isEmpty()) {
                     DialogUtil.showErrorDialog(
                             dialog,
-                            "CommandObject should not be empty!",
-                            "CommandObject is empty!"
+                            "Command should not be empty!",
+                            "Command is empty!"
                     );
                     return;
                 }
