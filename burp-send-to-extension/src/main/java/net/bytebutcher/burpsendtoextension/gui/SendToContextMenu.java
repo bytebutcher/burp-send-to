@@ -1,9 +1,6 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
-import burp.BurpExtender;
-import burp.IContextMenuFactory;
-import burp.IContextMenuInvocation;
-import burp.IHttpRequestResponse;
+import burp.*;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.gui.util.ShellEscapeUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
@@ -44,19 +41,26 @@ public class SendToContextMenu implements IContextMenuFactory {
         return sendToMenuBar;
     }
 
+    private IRequestInfo getRequestInfo(IHttpRequestResponse req) {
+        return burpExtender.getCallbacks().getHelpers().analyzeRequest(req.getHttpService(), req.getRequest());
+    }
+
     private String getSelectedText(IContextMenuInvocation invocation) {
         String selectedText = null;
-        int[] selection = invocation.getSelectionBounds();
+        int[] selectionBounds = invocation.getSelectionBounds();
+        IHttpRequestResponse[] selectedMessages = invocation.getSelectedMessages();
         byte iContext = invocation.getInvocationContext();
-        if (selection != null) {
+        if (selectionBounds != null) {
             IHttpRequestResponse iHttpRequestResponse = invocation.getSelectedMessages()[0];
             if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
                     || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
-                selectedText = new String(iHttpRequestResponse.getRequest()).substring(selection[0], selection[1]);
+                selectedText = new String(iHttpRequestResponse.getRequest()).substring(selectionBounds[0], selectionBounds[1]);
             } else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
                     || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
-                selectedText = new String(iHttpRequestResponse.getResponse()).substring(selection[0], selection[1]);
+                selectedText = new String(iHttpRequestResponse.getResponse()).substring(selectionBounds[0], selectionBounds[1]);
             }
+        } else if (selectedMessages != null) {
+            selectedText = getRequestInfo(selectedMessages[0]).getUrl().toString();
         }
         return selectedText;
     }
