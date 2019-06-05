@@ -31,6 +31,12 @@ Usually the options of the "Send to"-Tab are saved automatically. However, if yo
 
 ![Burp-Send-To-Extension Options](images/burp-send-to-extension-options.png)
 
+## Security Notes
+
+Executing commands based on untrusted input always introduces the risk of command injection. This is especially true when using the **%S** placeholder. Thus it is recommended to always activate the **Show preview** option when using the **%S** placeholder and closely analyse commands in the preview window prior to execution.
+
+![Burp-Send-To-Extension Options](images/burp-send-to-extension-forkbomb.png)
+
 ## Build
 
 This project was built using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
@@ -40,4 +46,4 @@ This project was built using IntelliJ and Gradle. When you make changes to the s
 When the GUI is not updated correctly you may rebuild the project manually:
 * Build -> Rebuild Project
 
-After that you can execute the "fatJar"-task within the "build.gradle"-file. This will produce a jar in the "build/libs/" directory called "burp-send-to-extension-all-{version}.jar".
+After that you can execute the "fatJar"-task within the "build.gradle"-file. This will produce a jar in the "build/libs/" directory called "burp-send-to-extension-{version}.jar".

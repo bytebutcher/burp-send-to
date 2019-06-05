@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group 'net.bytebutcher'
-version '0.92'
+version '0.93'
 
 sourceCompatibility = 1.8
 
@@ -19,7 +19,7 @@ dependencies {
 }
 
 task fatJar(type: Jar) {
-    baseName = project.name + '-all'
+    baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
