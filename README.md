@@ -20,10 +20,11 @@ After creating new context-menu-entries using the "Add"-button they can be edite
 
 ## Context-Menu
 
-The context-menu contains all entries which were added in the "Send to"-Tab.
+The "Send to..." context-menu contains all entries which were added in the "Send to"-Tab.
 In addition you can add new entries via the "Custom command..."-context-menu-entry.
 
-![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu.png)
+![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
+![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
 
 ## Save and load options
 
