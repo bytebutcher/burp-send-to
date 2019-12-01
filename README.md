@@ -13,7 +13,7 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 	* **%F:** will be replaced with the path to a temporary file which contains the selected text
 * **Run in terminal:** defines whether a terminal-window should appear in which the configured command is executed. By default "xterm" is used as terminal-emulator. You can change the terminal-emulator in the "Miscellaneous Options" to your liking.
 * **Show preview:** gives you the chance to preview and change the command before executing it
-* **Output should replace selection:** will replace the selection with the output of the command
+* **Output should replace selection:** will replace the selection with the output of the to be executed command
 
 After creating new context-menu-entries using the "Add"-button they can be edited or deleted again using the "Edit"- and "Remove"-button. In addition the order in which they appear in the context-menu can be altered using the "Up"- and "Down"-button.
 

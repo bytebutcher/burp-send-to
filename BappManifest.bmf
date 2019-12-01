@@ -2,7 +2,7 @@ Uuid: f089f1ad056545489139cb9f32900f8e
 ExtensionType: 1
 Name: Custom Send To
 RepoName: custom-send-to
-ScreenVersion: 0.93
+ScreenVersion: 0.94
 SerialVersion: 1
 MinPlatformVersion: 0
 ProOnly: False
