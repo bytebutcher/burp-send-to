@@ -10,7 +10,6 @@ import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Set;
 
 public class SendToAddDialog {
@@ -22,6 +21,7 @@ public class SendToAddDialog {
     private JPanel formPanel;
     private JButton btnCommandHelp;
     private JCheckBox chkShowPreviewPriorToExecution;
+    private JCheckBox chkOutputReplacesSelection;
     private final JDialog dialog;
 
     private boolean success = false;
@@ -43,6 +43,7 @@ public class SendToAddDialog {
         txtCommand.setText(commandObject.getCommand());
         chkRunInTerminal.setSelected(commandObject.isRunInTerminal());
         chkShowPreviewPriorToExecution.setSelected(commandObject.shouldShowPreview());
+        chkOutputReplacesSelection.setSelected(commandObject.shouldOutputReplaceSelection());
     }
 
     private void initKeyboardShortcuts() {
@@ -138,12 +139,16 @@ public class SendToAddDialog {
         return chkRunInTerminal.isSelected();
     }
 
+    private boolean shouldOutputReplaceSelection() {
+        return chkOutputReplacesSelection.isSelected();
+    }
+
     private boolean shouldShowPreview() {
         return chkShowPreviewPriorToExecution.isSelected();
     }
 
     public CommandObject getCommandObject() {
-        return new CommandObject(getName(), getCommand(), isRunInTerminal(), shouldShowPreview());
+        return new CommandObject(getName(), getCommand(), isRunInTerminal(), shouldShowPreview(), shouldOutputReplaceSelection());
     }
 
     {
@@ -233,6 +238,18 @@ public class SendToAddDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 2, 2, 2);
         panel1.add(chkShowPreviewPriorToExecution, gbc);
+        chkOutputReplacesSelection = new JCheckBox();
+        chkOutputReplacesSelection.setEnabled(true);
+        chkOutputReplacesSelection.setSelected(false);
+        chkOutputReplacesSelection.setText("Output should replace selection");
+        chkOutputReplacesSelection.setMnemonic('O');
+        chkOutputReplacesSelection.setDisplayedMnemonicIndex(0);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 2, 2, 2);
+        panel1.add(chkOutputReplacesSelection, gbc);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         formPanel.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -256,4 +273,5 @@ public class SendToAddDialog {
     public JComponent $$$getRootComponent$$$() {
         return formPanel;
     }
+
 }

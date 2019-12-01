@@ -9,16 +9,18 @@ public class CommandObject {
     private String command;
     private boolean runInTerminal;
     private boolean showPreview;
+    private boolean outputReplaceSelection;
 
-    public CommandObject(String name, String command, boolean runInTerminal, boolean showPreview) {
+    public CommandObject(String name, String command, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
         this.name = name;
         this.command = command;
         this.runInTerminal = runInTerminal;
         this.showPreview = showPreview;
+        this.outputReplaceSelection = outputReplaceSelection;
     }
 
-    public CommandObject(String id, String name, String command, boolean runInTerminal, boolean showPreview) {
-        this(name, command, runInTerminal, showPreview);
+    public CommandObject(String id, String name, String command, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
+        this(name, command, runInTerminal, showPreview, outputReplaceSelection);
         this.id = id;
     }
 
@@ -46,5 +48,13 @@ public class CommandObject {
 
     public void setShowPreview(boolean showPreview) {
         this.showPreview = showPreview;
+    }
+
+    public void setOutputReplaceSelection(boolean outputReplaceSelection) {
+        this.outputReplaceSelection = outputReplaceSelection;
+    }
+
+    public boolean shouldOutputReplaceSelection() {
+        return outputReplaceSelection;
     }
 }

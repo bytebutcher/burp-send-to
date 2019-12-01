@@ -52,7 +52,7 @@ public class SendToPreviewDialog {
         alwaysShowThisDialogCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendToTableListener.onShowPreviewChannge(e, commandId, alwaysShowThisDialogCheckBox.isSelected());
+                sendToTableListener.onShowPreviewChange(e, commandId, alwaysShowThisDialogCheckBox.isSelected());
             }
         });
     }

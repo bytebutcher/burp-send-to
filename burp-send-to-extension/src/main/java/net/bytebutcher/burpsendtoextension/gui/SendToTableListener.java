@@ -60,7 +60,7 @@ public class SendToTableListener implements TableModelListener {
         commandsChangeListeners.add(commandsChangeListener);
     }
 
-    void onShowPreviewChannge(ActionEvent e, String commandId, boolean showPreview) {
+    void onShowPreviewChange(ActionEvent e, String commandId, boolean showPreview) {
         CommandObject commandObject = sendToTable.getCommandObjectById(commandId);
         commandObject.setShowPreview(showPreview);
         sendToTable.editCommandObject(commandObject);

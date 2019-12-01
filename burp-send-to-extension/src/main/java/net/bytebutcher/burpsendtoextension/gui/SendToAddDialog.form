@@ -96,6 +96,17 @@
               <text value="&amp;Show preview prior to execution"/>
             </properties>
           </component>
+          <component id="512f7" class="javax.swing.JCheckBox" binding="chkOutputReplacesSelection">
+            <constraints>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="5" left="2" bottom="2" right="2" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <selected value="false"/>
+              <text value="&amp;Output should replace selection"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="86a29" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

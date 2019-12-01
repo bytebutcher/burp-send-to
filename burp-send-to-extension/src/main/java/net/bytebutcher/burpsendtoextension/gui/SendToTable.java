@@ -20,7 +20,8 @@ public class SendToTable extends JTable {
         NAME(1),
         COMMAND(2),
         RUN_IN_TERMINAL(3),
-        SHOW_PREVIEW(4);
+        SHOW_PREVIEW(4),
+        OUTPUT_REPLACE_SELECTION(5);
 
         private final int index;
 
@@ -46,7 +47,8 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Name");
         this.defaultModel.addColumn("Command");
         this.defaultModel.addColumn("Run in terminal");
-        this.defaultModel.addColumn("Show Preview");
+        this.defaultModel.addColumn("Show preview");
+        this.defaultModel.addColumn("Output should replace selection");
         setModel(this.defaultModel);
 
         // Hide Id-Column.
@@ -96,6 +98,10 @@ public class SendToTable extends JTable {
         return Boolean.parseBoolean(this.getModel().getValueAt(rowIndex, Column.RUN_IN_TERMINAL.getIndex()).toString());
     }
 
+    private boolean getOutputReplaceSelectionByRowIndex(int rowIndex) {
+        return Boolean.parseBoolean(this.getModel().getValueAt(rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex()).toString());
+    }
+
     private String getCommandByRowIndex(int rowIndex) {
         return this.getModel().getValueAt(rowIndex, Column.COMMAND.getIndex()).toString();
     }
@@ -114,7 +120,8 @@ public class SendToTable extends JTable {
         String command = getCommandByRowIndex(rowIndex);
         boolean runInTerminal = getRunInTerminalByRowIndex(rowIndex);
         boolean showPreview = getShowPreviewByRowIndex(rowIndex);
-        return new CommandObject(id, name, command, runInTerminal, showPreview);
+        boolean outputReplaceSelection = getOutputReplaceSelectionByRowIndex(rowIndex);
+        return new CommandObject(id, name, command, runInTerminal, showPreview, outputReplaceSelection);
     }
 
     public CommandObject getCommandObjectById(String commandId) {
@@ -144,7 +151,8 @@ public class SendToTable extends JTable {
                 commandObject.getName(),
                 commandObject.getCommand(),
                 commandObject.isRunInTerminal(),
-                commandObject.shouldShowPreview()
+                commandObject.shouldShowPreview(),
+                commandObject.shouldOutputReplaceSelection()
         });
     }
 
@@ -162,6 +170,7 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.getCommand(), rowIndex, Column.COMMAND.getIndex());
         model.setValueAt(commandObject.isRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
+        model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
     }
 
     public void editCommandObject(CommandObject commandObject) {
