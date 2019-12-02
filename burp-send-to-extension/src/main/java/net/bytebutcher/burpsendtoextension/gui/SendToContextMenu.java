@@ -1,6 +1,7 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.*;
+import com.google.common.collect.*;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
@@ -88,7 +89,7 @@ public class SendToContextMenu implements IContextMenuFactory {
                 SendToAddDialog addDialog = new SendToAddDialog(
                         burpExtender.getParent(),
                         "Add and run custom command...",
-                        getCommandNames(commandObjects)
+                        commandObjects
                 );
                 if (addDialog.run()) {
                     CommandObject commandObject = addDialog.getCommandObject();
@@ -102,20 +103,44 @@ public class SendToContextMenu implements IContextMenuFactory {
         }));
         if (commandObjects.size() > 0) {
             sendToMenu.addSeparator();
+            HashMap<String, java.util.List<CommandObject>> groupedCommandObjects = Maps.newLinkedHashMap();
+            boolean hasEmptyGroup = false;
             for (final CommandObject commandObject : commandObjects) {
-                sendToMenu.add(new JMenuItem(new AbstractAction(commandObject.getName()) {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String result = runCommandObject(commandObject);
-                        if (commandObject.shouldOutputReplaceSelection() && result != null) {
-                            replaceSelectedText(result);
-                        }
-                    }
-                }));
+                String group = commandObject.getGroup();
+                if (group.isEmpty()) {
+                    sendToMenu.add(newCommandMenuItem(commandObject));
+                    hasEmptyGroup = true;
+                    continue;
+                }
+                if (!groupedCommandObjects.containsKey(group)) {
+                    groupedCommandObjects.put(group, Lists.newArrayList());
+                }
+                groupedCommandObjects.get(group).add(commandObject);
+            }
+            if (hasEmptyGroup && !groupedCommandObjects.isEmpty()) {
+                sendToMenu.addSeparator();
+            }
+            for (String group : groupedCommandObjects.keySet()) {
+                JMenu menuItem = new JMenu(group);
+                for (CommandObject commandObject : groupedCommandObjects.get(group)) {
+                    menuItem.add(newCommandMenuItem(commandObject));
+                }
+                sendToMenu.add(menuItem);
             }
         }
         sendToMenuBar.add(sendToMenu);
+    }
+
+    private JMenuItem newCommandMenuItem(CommandObject commandObject) {
+        return new JMenuItem(new AbstractAction(commandObject.getName()) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String result = runCommandObject(commandObject);
+                if (commandObject.shouldOutputReplaceSelection() && result != null) {
+                    replaceSelectedText(result);
+                }
+            }
+        });
     }
 
     private Set<String> getCommandNames(List<CommandObject> commandObjects) {

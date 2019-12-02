@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="formPanel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="623" height="243"/>
+      <xy x="20" y="20" width="623" height="268"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -52,7 +52,7 @@
           </component>
           <component id="af465" class="javax.swing.JCheckBox" binding="chkRunInTerminal">
             <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="2" bottom="2" right="2" weightx="1.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -88,7 +88,7 @@
           </grid>
           <component id="1d8bf" class="javax.swing.JCheckBox" binding="chkShowPreviewPriorToExecution">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="2" bottom="2" right="2" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -98,7 +98,7 @@
           </component>
           <component id="512f7" class="javax.swing.JCheckBox" binding="chkOutputReplacesSelection">
             <constraints>
-              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="2" bottom="2" right="2" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -106,6 +106,24 @@
               <selected value="false"/>
               <text value="&amp;Output should replace selection"/>
             </properties>
+          </component>
+          <component id="c7d44" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="2" left="2" bottom="2" right="10" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="&amp;Group:"/>
+            </properties>
+          </component>
+          <component id="532e8" class="javax.swing.JTextField" binding="txtGroup">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag top="2" left="2" bottom="2" right="2" weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
           </component>
         </children>
       </grid>

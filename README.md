@@ -11,6 +11,7 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 * **Command:** the command to be executed. You can use following placeholders:
 	* **%S:** will be replaced with the selected text
 	* **%F:** will be replaced with the path to a temporary file which contains the selected text
+* **Group:** the name of the sub-menu in which this entry will be shown. Might be empty
 * **Run in terminal:** defines whether a terminal-window should appear in which the configured command is executed. By default "xterm" is used as terminal-emulator. You can change the terminal-emulator in the "Miscellaneous Options" to your liking.
 * **Show preview:** gives you the chance to preview and change the command before executing it
 * **Output should replace selection:** will replace the selection with the output of the to be executed command
@@ -26,6 +27,8 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
+![Burp-Send-To-Extension Context-Menu Groups](images/burp-send-to-extension-context-menu-groups.png)
+
 
 ## Save and load options
 

@@ -5,10 +5,8 @@ import net.bytebutcher.burpsendtoextension.models.CommandObject;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SendToTable extends JTable {
 
@@ -19,9 +17,10 @@ public class SendToTable extends JTable {
         ID(0),
         NAME(1),
         COMMAND(2),
-        RUN_IN_TERMINAL(3),
-        SHOW_PREVIEW(4),
-        OUTPUT_REPLACE_SELECTION(5);
+        GROUP(3),
+        RUN_IN_TERMINAL(4),
+        SHOW_PREVIEW(5),
+        OUTPUT_REPLACE_SELECTION(6);
 
         private final int index;
 
@@ -46,13 +45,19 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Id");
         this.defaultModel.addColumn("Name");
         this.defaultModel.addColumn("Command");
+        this.defaultModel.addColumn("Group name");
         this.defaultModel.addColumn("Run in terminal");
         this.defaultModel.addColumn("Show preview");
         this.defaultModel.addColumn("Output should replace selection");
         setModel(this.defaultModel);
+        hideColumns(Column.ID, Column.COMMAND);
+    }
 
-        // Hide Id-Column.
-        this.removeColumn(this.getColumnModel().getColumn(Column.ID.getIndex()));
+    private void hideColumns(Column ... c) {
+        List<Column> collect = Arrays.stream(c).sorted(Comparator.comparingInt(Column::getIndex).reversed()).collect(Collectors.toList());
+        for (Column column : collect) {
+            this.removeColumn(this.getColumnModel().getColumn(column.getIndex()));
+        }
     }
 
     public CommandObject getSelectedCommandObject() {
@@ -68,15 +73,6 @@ public class SendToTable extends JTable {
         return defaultModel;
     }
 
-    public Set<String> getNames() {
-        Set<String> names = new HashSet<String>();
-        for(int i = 0; i < this.getModel().getRowCount();i++)
-        {
-            names.add(getNameByRowIndex(i));
-        }
-        return names;
-    }
-
     public String getSelectedName() {
         int[] selectedRows = this.getSelectedRows();
         if (selectedRows.length > 0) {
@@ -87,23 +83,27 @@ public class SendToTable extends JTable {
     }
 
     private String getNameByRowIndex(int rowIndex) {
-        return this.getModel().getValueAt(rowIndex, Column.NAME.getIndex()).toString();
+        return Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.NAME.getIndex())).orElse("").toString();
     }
 
     private boolean getShowPreviewByRowIndex(int rowIndex) {
-        return Boolean.parseBoolean(this.getModel().getValueAt(rowIndex, Column.SHOW_PREVIEW.getIndex()).toString());
+        return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.SHOW_PREVIEW.getIndex())).orElse("").toString());
     }
 
     private boolean getRunInTerminalByRowIndex(int rowIndex) {
-        return Boolean.parseBoolean(this.getModel().getValueAt(rowIndex, Column.RUN_IN_TERMINAL.getIndex()).toString());
+        return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.RUN_IN_TERMINAL.getIndex())).orElse("").toString());
     }
 
     private boolean getOutputReplaceSelectionByRowIndex(int rowIndex) {
-        return Boolean.parseBoolean(this.getModel().getValueAt(rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex()).toString());
+        return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex())).orElse("false").toString());
+    }
+
+    private String getGroupByRowIndex(int rowIndex) {
+        return Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.GROUP.getIndex())).orElse("").toString();
     }
 
     private String getCommandByRowIndex(int rowIndex) {
-        return this.getModel().getValueAt(rowIndex, Column.COMMAND.getIndex()).toString();
+        return Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.COMMAND.getIndex())).orElse("").toString();
     }
 
     public List<CommandObject> getCommandObjects() {
@@ -118,10 +118,11 @@ public class SendToTable extends JTable {
         String id = this.getModel().getValueAt(rowIndex, Column.ID.getIndex()).toString();
         String name = getNameByRowIndex(rowIndex);
         String command = getCommandByRowIndex(rowIndex);
+        String group = getGroupByRowIndex(rowIndex);
         boolean runInTerminal = getRunInTerminalByRowIndex(rowIndex);
         boolean showPreview = getShowPreviewByRowIndex(rowIndex);
         boolean outputReplaceSelection = getOutputReplaceSelectionByRowIndex(rowIndex);
-        return new CommandObject(id, name, command, runInTerminal, showPreview, outputReplaceSelection);
+        return new CommandObject(id, name, command, group, runInTerminal, showPreview, outputReplaceSelection);
     }
 
     public CommandObject getCommandObjectById(String commandId) {
@@ -150,6 +151,7 @@ public class SendToTable extends JTable {
                 commandObject.getId(),
                 commandObject.getName(),
                 commandObject.getCommand(),
+                commandObject.getGroup(),
                 commandObject.isRunInTerminal(),
                 commandObject.shouldShowPreview(),
                 commandObject.shouldOutputReplaceSelection()
@@ -167,6 +169,7 @@ public class SendToTable extends JTable {
         DefaultTableModel model = getDefaultModel();
         model.setValueAt(commandObject.getId(), rowIndex, Column.ID.getIndex());
         model.setValueAt(commandObject.getName(), rowIndex, Column.NAME.getIndex());
+        model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
         model.setValueAt(commandObject.getCommand(), rowIndex, Column.COMMAND.getIndex());
         model.setValueAt(commandObject.isRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());

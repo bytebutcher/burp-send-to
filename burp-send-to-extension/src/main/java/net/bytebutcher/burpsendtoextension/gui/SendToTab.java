@@ -48,7 +48,7 @@ public class SendToTab {
             public void actionPerformed(final ActionEvent e) {
                 new Thread(new Runnable() {
                     public void run() {
-                        SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add \"Send to\" context menu entry", sendToTable.getNames());
+                        SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add \"Send to\" context menu entry", sendToTable.getCommandObjects());
                         if (addDialog.run()) {
                             sendToTableListener.onAddButtonClick(e, addDialog.getCommandObject());
                         }
@@ -60,7 +60,7 @@ public class SendToTab {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommandObject selectedCommandObject = sendToTable.getSelectedCommandObject();
-                SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit \"Send to " + selectedCommandObject.getName() + "\" context menu entry", sendToTable.getNames(), selectedCommandObject);
+                SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit \"Send to " + selectedCommandObject.getName() + "\" context menu entry", sendToTable.getCommandObjects(), selectedCommandObject);
                 if (editDialog.run()) {
                     sendToTableListener.onEditButtonClick(e, editDialog.getCommandObject());
                 }
