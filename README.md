@@ -7,14 +7,14 @@ Adds a customizable "Send to..."-context-menu to your BurpSuite.
 After loading the extension the "Send to"-Tab contains all necessary options to configure the "Send to"-context-menu. 
 
 New context-menu-entries can be added using the "Add"-button. Each entry consists of following fields:
-* **Name:** the name of the context-menu-entry
+* **Name:** the name of the context-menu-entry.
 * **Command:** the command to be executed. You can use following placeholders:
 	* **%S:** will be replaced with the selected text
 	* **%F:** will be replaced with the path to a temporary file which contains the selected text
-* **Group:** the name of the sub-menu in which this entry will be shown. Might be empty
+* **Group:** the name of the sub-menu in which this entry will be shown. Can be left blank.
 * **Run in terminal:** defines whether a terminal-window should appear in which the configured command is executed. By default "xterm" is used as terminal-emulator. You can change the terminal-emulator in the "Miscellaneous Options" to your liking.
-* **Show preview:** gives you the chance to preview and change the command before executing it
-* **Output should replace selection:** will replace the selection with the output of the to be executed command
+* **Show preview:** gives you the chance to preview and change the command before executing it.
+* **Output should replace selection:** will replace the selection with the output of the to be executed command.
 
 After creating new context-menu-entries using the "Add"-button they can be edited or deleted again using the "Edit"- and "Remove"-button. In addition the order in which they appear in the context-menu can be altered using the "Up"- and "Down"-button.
 
