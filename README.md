@@ -27,8 +27,6 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
-![Burp-Send-To-Extension Context-Menu Groups](images/burp-send-to-extension-context-menu-groups.png)
-
 
 ## Save and load options
 
