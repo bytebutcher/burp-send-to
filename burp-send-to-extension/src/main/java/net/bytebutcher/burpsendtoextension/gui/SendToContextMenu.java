@@ -4,13 +4,17 @@ import burp.*;
 import com.google.common.collect.*;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.Cookie;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SendToContextMenu implements IContextMenuFactory {
 
@@ -44,35 +48,211 @@ public class SendToContextMenu implements IContextMenuFactory {
         return burpExtender.getCallbacks().getHelpers().analyzeRequest(req.getHttpService(), req.getRequest());
     }
 
+    private IResponseInfo getResponseInfo(IHttpRequestResponse req) {
+        return burpExtender.getCallbacks().getHelpers().analyzeResponse(req.getResponse());
+    }
+
+    private String getUrl() {
+        String url = "";
+        try {
+            IRequestInfo iRequestInfo = this.burpExtender.getCallbacks().getHelpers().analyzeRequest(this.invocation.getSelectedMessages()[0]);
+            url = iRequestInfo.getUrl().toString();
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing URL!");
+        }
+        return url;
+    }
+
+    private String getHost() {
+        String host = "";
+        try {
+            host = this.invocation.getSelectedMessages()[0].getHttpService().getHost();
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing host!");
+        }
+        return host;
+    }
+
+    private String getPort() {
+        String port = "";
+        try {
+            port = String.valueOf(this.invocation.getSelectedMessages()[0].getHttpService().getPort());
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing port!");
+        }
+        return port;
+    }
+
     private String getSelectedText() {
-        String selectedText = null;
-        int[] selectionBounds = this.invocation.getSelectionBounds();
-        IHttpRequestResponse[] selectedMessages = invocation.getSelectedMessages();
-        byte iContext = invocation.getInvocationContext();
-        if (selectionBounds != null) {
-            IHttpRequestResponse iHttpRequestResponse = invocation.getSelectedMessages()[0];
-            if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
-                    || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
-                selectedText = new String(iHttpRequestResponse.getRequest()).substring(selectionBounds[0], selectionBounds[1]);
-            } else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
-                    || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
-                selectedText = new String(iHttpRequestResponse.getResponse()).substring(selectionBounds[0], selectionBounds[1]);
+        String selectedText = "";
+        try {
+            int[] selectionBounds = this.invocation.getSelectionBounds();
+            IHttpRequestResponse[] selectedMessages = invocation.getSelectedMessages();
+            if (selectionBounds != null && selectedMessages != null) {
+                byte iContext = invocation.getInvocationContext();
+                byte[] requestResponse = getRequestResponse(iContext, invocation.getSelectedMessages()[0]);
+                if (requestResponse != null) {
+                    selectedText = new String(requestResponse).substring(selectionBounds[0], selectionBounds[1]);
+                } else {
+                    BurpExtender.printErr("Error parsing selected text! No request/response found!");
+                }
+            } else {
+                BurpExtender.printErr("Error parsing selected text! No selected message and/or selection bounds!");
             }
-        } else if (selectedMessages != null) {
-            selectedText = getRequestInfo(selectedMessages[0]).getUrl().toString();
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing selected text!");
         }
         return selectedText;
     }
 
+    private String getRequestResponse() {
+        String requestResponseString = "";
+        try {
+            byte iContext = invocation.getInvocationContext();
+            byte[] requestResponse = getRequestResponse(iContext, invocation.getSelectedMessages()[0]);
+            requestResponseString = (requestResponse == null) ? "" : new String(requestResponse);
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing focused request/response!");
+        }
+        return requestResponseString;
+    }
+
+    private byte[] getRequestResponse(byte iContext, IHttpRequestResponse message) {
+        if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
+                || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
+            // HTTP-Request
+            return message.getRequest();
+        } else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
+                || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
+            // HTTP-Response
+            return message.getResponse();
+        } else {
+            // Unknown
+            return null;
+        }
+    }
+
+    private String getMethod() {
+        String method = "";
+        try {
+            IRequestInfo iRequestInfo = this.burpExtender.getCallbacks().getHelpers().analyzeRequest(this.invocation.getSelectedMessages()[0]);
+            method = iRequestInfo.getMethod();
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing method!");
+        }
+        return method;
+    }
+
+    private String getCookies() {
+        String cookies = "";
+        try {
+            List<ICookie> cookieList = Lists.newArrayList();
+            String cookieHeaderPrefix = "cookie: ";
+            IHttpRequestResponse[] selectedMessages = invocation.getSelectedMessages();
+            if (selectedMessages != null) {
+                IHttpRequestResponse message = selectedMessages[0];
+                List<String> cookieHeaders = getRequestInfo(message).getHeaders().stream().filter(s -> s.toLowerCase().startsWith(cookieHeaderPrefix)).collect(Collectors.toList());
+                boolean hasCookieHeader = !cookieHeaders.isEmpty();
+                cookieList = Lists.newArrayList();
+                if (hasCookieHeader) {
+                    for (String cookieHeader : cookieHeaders) {
+                        cookieList.addAll(Cookie.parseRequestCookies(cookieHeader.substring(cookieHeaderPrefix.length() - 1)));
+                    }
+                }
+            }
+            cookies = cookieList.stream().map(iCookie -> iCookie.getName() + "=" + iCookie.getValue()).collect(Collectors.joining(","));
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing cookies!");
+        }
+        return cookies;
+    }
+
+    private String getUrlPath() {
+        String urlPath = "";
+        try {
+            IRequestInfo iRequestInfo = this.burpExtender.getCallbacks().getHelpers().analyzeRequest(this.invocation.getSelectedMessages()[0]);
+            if (iRequestInfo.getUrl().getPath() != null) {
+                urlPath = iRequestInfo.getUrl().getPath();
+            }
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing url path!");
+        }
+        return urlPath;
+    }
+
+    private String getUrlQuery() {
+        String urlQuery = "";
+        try {
+            IRequestInfo iRequestInfo = this.burpExtender.getCallbacks().getHelpers().analyzeRequest(this.invocation.getSelectedMessages()[0]);
+            if (iRequestInfo.getUrl().getQuery() != null) {
+                urlQuery = iRequestInfo.getUrl().getQuery();
+            }
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing url query!");
+        }
+        return urlQuery;
+    }
+
+    private String getProtocol() {
+        String protocol = "";
+        try {
+            protocol = String.valueOf(this.invocation.getSelectedMessages()[0].getHttpService().getProtocol());
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing protocol!");
+        }
+        return protocol;
+    }
+
+    public String getBody() {
+        String body = "";
+        try {
+            byte iContext = invocation.getInvocationContext();
+            IHttpRequestResponse[] selectedMessages = invocation.getSelectedMessages();
+            if (selectedMessages != null) {
+                IHttpRequestResponse message = selectedMessages[0];
+                int bodyOffset = getBodyOffset(iContext, message);
+                if (bodyOffset != -1) {
+                    byte[] requestResponse = getRequestResponse(iContext, message);
+                    if (requestResponse != null) {
+                        body = new String(Arrays.copyOfRange(requestResponse, bodyOffset, requestResponse.length));
+                    } else {
+                        BurpExtender.printErr("Error parsing body! No request/response found!");
+                    }
+                } else {
+                    BurpExtender.printErr("Error parsing body! Parsing body offset failed!");
+                }
+            } else {
+                BurpExtender.printErr("Error parsing body! No selected message!");
+            }
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error parsing body!");
+        }
+        return body;
+    }
+
+    private int getBodyOffset(byte iContext, IHttpRequestResponse message) {
+        int bodyOffset = -1;
+        if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
+                || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
+            // HTTP-Request
+            bodyOffset = getRequestInfo(message).getBodyOffset();
+        } else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
+                || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
+            // HTTP-Response
+            bodyOffset = getResponseInfo(message).getBodyOffset();
+        }
+        return bodyOffset;
+    }
+
     private void replaceSelectedText(String replaceText) {
-        if(invocation.getInvocationContext() == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST || invocation.getInvocationContext() == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
+        if (invocation.getInvocationContext() == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST || invocation.getInvocationContext() == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
             int[] bounds = invocation.getSelectionBounds();
             byte[] message = invocation.getSelectedMessages()[0].getRequest();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
                 outputStream.write(Arrays.copyOfRange(message, 0, bounds[0]));
                 outputStream.write(replaceText.getBytes());
-                outputStream.write(Arrays.copyOfRange(message, bounds[1],message.length));
+                outputStream.write(Arrays.copyOfRange(message, bounds[1], message.length));
                 outputStream.flush();
                 invocation.getSelectedMessages()[0].setRequest(outputStream.toByteArray());
             } catch (IOException e) {
@@ -168,9 +348,17 @@ public class SendToContextMenu implements IContextMenuFactory {
                     "<html><p>There was an unknown error during command execution!</p>" +
                             "<p>For more information check out the \"Send to\" extension error log!</p></html>"
             );
-            burpExtender.getCallbacks().printError("Error during command execution: " + e);
+            BurpExtender.printErr("Error during command execution: " + e);
+            BurpExtender.printErr(stackTraceToString(e));
             return null;
         }
+    }
+
+    private String stackTraceToString(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
     }
 
     private String[] getCommandToBeExecuted(CommandObject commandObject) throws IOException {
@@ -214,21 +402,60 @@ public class SendToContextMenu implements IContextMenuFactory {
     }
 
     private String formatCommandPattern(String command) throws IOException {
-        if (command.contains("%F")) {
-            File tmp = writeTextToTemporaryFile(command);
-            command = command.replace("%F", tmp.getAbsolutePath());
-        }
         if (command.contains("%S")) {
             command = command.replace("%S", "'" + StringUtils.shellEscape(this.getSelectedText()) + "'");
+        }
+        if (command.contains("%H")) {
+            command = command.replace("%H", "'" + StringUtils.shellEscape(getHost()) +  "'");
+        }
+        if (command.contains("%P")) {
+            command = command.replace("%P", getPort());
+        }
+        if (command.contains("%T")) {
+            command = command.replace("%T", "'" + StringUtils.shellEscape(getProtocol()) +  "'");
+        }
+        if (command.contains("%U")) {
+            command = command.replace("%U", "'" + StringUtils.shellEscape(getUrl()) +  "'");
+        }
+        if (command.contains("%A")) {
+            command = command.replace("%A", "'" + StringUtils.shellEscape(getUrlPath()) +  "'");
+        }
+        if (command.contains("%Q")) {
+            command = command.replace("%Q", "'" + StringUtils.shellEscape(getUrlQuery()) +  "'");
+        }
+        if (command.contains("%C")) {
+            command = command.replace("%C",  "'" + StringUtils.shellEscape(getCookies()) +  "'");
+        }
+        if (command.contains("%M")) {
+            command = command.replace("%M", "'" + StringUtils.shellEscape(getMethod()) +  "'");
+        }
+        if (command.contains("%B")) {
+            File tmp = writeTextToTemporaryFile(getBody());
+            command = command.replace("%B", tmp.getAbsolutePath());
+        }
+        if (command.contains("%R")) {
+            File tmp = writeTextToTemporaryFile(getRequestResponse());
+            command = command.replace("%R", tmp.getAbsolutePath());
+        }
+        if (command.contains("%F")) {
+            File tmp = writeTextToTemporaryFile(getSelectedText());
+            command = command.replace("%F", tmp.getAbsolutePath());
         }
         return command;
     }
 
-    private File writeTextToTemporaryFile(String command) throws IOException {
+    private File writeTextToTemporaryFile(String input) throws IOException {
+        if (input == null) {
+            input = "";
+        }
         File tmp = File.createTempFile("burp_", ".snd");
-        PrintWriter out = new PrintWriter(tmp.getPath());
-        out.write(this.getSelectedText());
-        out.flush();
+        try {
+            PrintWriter out = new PrintWriter(tmp.getPath());
+            out.write(input);
+            out.flush();
+        } catch (RuntimeException e) {
+            BurpExtender.printErr("Error writing to temporary file!");
+        }
         return tmp;
     }
 
@@ -245,6 +472,8 @@ public class SendToContextMenu implements IContextMenuFactory {
 
     private void logCommandToBeExecuted(String[] commandToBeExecuted) {
         String commandToBeExecutedWithoutControlCharacters = String.join(" ", commandToBeExecuted).replaceAll("[\u0000-\u001f]", "");
-        burpExtender.getCallbacks().printOutput("CommandObject: " + commandToBeExecutedWithoutControlCharacters);
+        String dateTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        BurpExtender.printOut("[" + dateTime + "] " + commandToBeExecutedWithoutControlCharacters);
+        BurpExtender.printOut("----------------------------------------------------------------------");
     }
 }

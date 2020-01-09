@@ -33,7 +33,7 @@ public class SendToTableListener implements TableModelListener {
         for (CommandsChangeListener commandsChangeListener : commandsChangeListeners) {
             commandsChangeListener.commandsChanged(commandObjects);
         }
-        this.burpExtender.getConfig().saveSendToTableData(new Gson().toJson(sendToTable.getCommandObjects()));
+        this.burpExtender.getConfig().saveSendToTableData(sendToTable.getCommandObjects());
     }
 
     void onAddButtonClick(ActionEvent e, CommandObject commandObject) {

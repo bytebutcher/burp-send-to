@@ -102,8 +102,18 @@ public class SendToAddDialog {
         btnCancel.addActionListener(onCancelActionListener);
         btnCommandHelp.addActionListener(new ToolTipActionListener(btnCommandHelp, "" +
                 "<html>" +
+                "<p>%H = Host</p>" +
+                "<p>%P = Port</p>" +
+                "<p>%T = Protocol</p>" +
+                "<p>%U = URL</p>" +
+                "<p>%A = Path</p>" +
+                "<p>%Q = Query</p>" +
+                "<p>%C = Cookies</p>" +
+                "<p>%M = Method</p>" +
                 "<p>%S = Selected text</p>" +
                 "<p>%F = Path to file containing selected text</p>" +
+                "<p>%R = Path to file containing focused request/response</p>" +
+                "<p>%B = Path to file containing body of focused request/response</p>" +
                 "</html>")
         );
     }
