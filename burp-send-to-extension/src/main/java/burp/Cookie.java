@@ -1,11 +1,10 @@
-package net.bytebutcher.burpsendtoextension.models;
+package burp;
 
-import burp.BurpExtender;
-import burp.ICookie;
 import com.google.common.collect.Lists;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implements the ICookie interface which holds details about an HTTP cookie.
@@ -37,13 +36,24 @@ public class Cookie implements ICookie {
     }
 
     /**
+     * Parses a list of HTTP response header fields containing the raw cookie
+     * _value_ (Minus "Set-Cookie:").
+     *
+     * @param rawCookies A list of string containing the raw cookie
+     * @return A list of ICookie objects parsed from a list of raw cookie strings
+     */
+    public static List<ICookie> parseResponseCookies(List<String> rawCookies) {
+        return rawCookies.stream().map(Cookie::parseResponseCookie).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    /**
      * Parses a cookie from a String containing the raw HTTP response header
      * _value_ (Minus "Set-Cookie:").
      *
      * @param rawCookie A String containing the raw cookie
      * @return A Cookie object parsed from the raw cookie string
      */
-    public static Optional<Cookie> parseResponseCookie(String rawCookie) {
+    private static Optional<ICookie> parseResponseCookie(String rawCookie) {
         String[] rawCookieParams = rawCookie.split(";");
 
         //get the cookie name, check for valid cookie
@@ -100,6 +110,17 @@ public class Cookie implements ICookie {
         }
 
         return Optional.of(output);
+    }
+
+    /**
+     * Parses cookies from a list of raw HTTP request headers
+     * _value_ (Minus "Cookie:").
+     *
+     * @param rawCookies A list of strings containing the raw cookie
+     * @return A list of ICookie objects parsed from a list of raw cookie strings
+     */
+    public static List<ICookie> parseRequestCookies(List<String> rawCookies) {
+        return rawCookies.stream().map(Cookie::parseRequestCookies).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     /**

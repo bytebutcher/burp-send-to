@@ -1,6 +1,7 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.BurpExtender;
+import com.google.common.primitives.Ints;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 
 import javax.swing.*;
@@ -73,7 +74,7 @@ public class SendToTable extends JTable {
         return defaultModel;
     }
 
-    public String getSelectedName() {
+    public String getSelectedNames() {
         int[] selectedRows = this.getSelectedRows();
         if (selectedRows.length > 0) {
             int selectedRow = selectedRows[0];
@@ -187,9 +188,10 @@ public class SendToTable extends JTable {
     }
 
     public void removeSelectedRow() {
-        int[] rows = this.getSelectedRows();
-        if (rows.length > 0) {
-            getDefaultModel().removeRow(rows[0]);
+        List<Integer> rows = Ints.asList(this.getSelectedRows());
+        Collections.sort(rows, Collections.reverseOrder());
+        for (Integer row : rows) {
+            getDefaultModel().removeRow(row);
         }
     }
 

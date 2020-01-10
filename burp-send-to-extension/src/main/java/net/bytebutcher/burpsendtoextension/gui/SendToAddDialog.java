@@ -4,8 +4,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bytebutcher.burpsendtoextension.gui.listener.ToolTipActionListener;
-import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
+import net.bytebutcher.burpsendtoextension.models.CommandObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,14 +106,15 @@ public class SendToAddDialog {
                 "<p>%P = Port</p>" +
                 "<p>%T = Protocol</p>" +
                 "<p>%U = URL</p>" +
-                "<p>%A = Path</p>" +
-                "<p>%Q = Query</p>" +
+                "<p>%A = URL-Path</p>" +
+                "<p>%Q = URL-Query</p>" +
                 "<p>%C = Cookies</p>" +
-                "<p>%M = Method</p>" +
+                "<p>%M = HTTP-Method</p>" +
                 "<p>%S = Selected text</p>" +
                 "<p>%F = Path to file containing selected text</p>" +
-                "<p>%R = Path to file containing focused request/response</p>" +
-                "<p>%B = Path to file containing body of focused request/response</p>" +
+                "<p>%R = Path to file containing focused HTTP-request/-response</p>" +
+                "<p>%B = Path to file containing HTTP-body of focused request/response</p>" +
+                "<p>%E = Path to file containing HTTP-header of focused request/response</p>" +
                 "</html>")
         );
     }

@@ -13,7 +13,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -48,7 +51,7 @@ public class SendToTab {
             public void actionPerformed(final ActionEvent e) {
                 new Thread(new Runnable() {
                     public void run() {
-                        SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add \"Send to\" context menu entry", sendToTable.getCommandObjects());
+                        SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add context menu entry", sendToTable.getCommandObjects());
                         if (addDialog.run()) {
                             sendToTableListener.onAddButtonClick(e, addDialog.getCommandObject());
                         }
@@ -60,7 +63,7 @@ public class SendToTab {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommandObject selectedCommandObject = sendToTable.getSelectedCommandObject();
-                SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit \"Send to " + selectedCommandObject.getName() + "\" context menu entry", sendToTable.getCommandObjects(), selectedCommandObject);
+                SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit context menu entry", sendToTable.getCommandObjects(), selectedCommandObject);
                 if (editDialog.run()) {
                     sendToTableListener.onEditButtonClick(e, editDialog.getCommandObject());
                 }
@@ -69,9 +72,8 @@ public class SendToTab {
         btnRemove.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = sendToTable.getSelectedName();
-                boolean result = DialogUtil.showConfirmationDialog(getParent(), "Delete \"Send to " + name + "\" context menu entry",
-                        "Do you really want to delete the \"Send to " + name + "\" context menu entry?");
+                boolean result = DialogUtil.showConfirmationDialog(getParent(), "Delete context menu entries",
+                        "Do you really want to delete the selected context menu entries?");
                 if (result) {
                     sendToTableListener.onRemoveButtonClick(e);
                 }

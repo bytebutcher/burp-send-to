@@ -14,10 +14,12 @@ public class Config {
 
     private final IBurpExtenderCallbacks callbacks;
     private BurpExtender burpExtender;
+    private String version = "0.99";
 
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
         this.callbacks = burpExtender.getCallbacks();
+        refreshVersion();
     }
 
     public void saveSendToTableData(List<CommandObject> sendToTableData) {
@@ -55,8 +57,8 @@ public class Config {
         String groupCMS = "cms";
         String groupSQL = "sql";
         String groupSSL = "ssl";
+        String groupOther = "other";
         return Lists.newArrayList(
-                new CommandObject("decoder++", "dpp --dialog -f %F", "", false, false, true),
                 // cms
                 new CommandObject("droopescan", "droopescan scan drupal -u %U -t 10", groupCMS, true, true, false),
                 new CommandObject("mooscan", "mooscan -v --url %U", groupCMS, true, true, false),
@@ -72,8 +74,29 @@ public class Config {
                 // ssl
                 new CommandObject("sslscan", "sslscan %H:%P", groupSSL, true, true, false),
                 new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, true, true, false),
-                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, true, true, false)
+                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, true, true, false),
+                // other
+                new CommandObject("Host (%H)", "echo %H", groupOther, true, true, true),
+                new CommandObject("Port (%P)", "echo %P", groupOther, true, true, true),
+                new CommandObject("Protocol (%T)", "echo %T", groupOther, true, true, true),
+                new CommandObject("URL (%U)", "echo %U", groupOther, true, true, true),
+                new CommandObject("URL Path (%A)", "echo %A", groupOther, true, true, true),
+                new CommandObject("URL Query (%Q)", "echo %Q", groupOther, true, true, true),
+                new CommandObject("Cookies (%C)", "echo %C", groupOther, true, true, true),
+                new CommandObject("HTTP Method (%M)", "echo %M", groupOther, true, true, true),
+                new CommandObject("Selected text (%S)", "echo %S", groupOther, true, true, true),
+                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, true, true, false),
+                new CommandObject("Selected request/response as file (%R)", "echo %R && cat %R", groupOther, true, true, false),
+                new CommandObject("Headers of selected request/response as file (%E)", "echo %E && cat %E", groupOther, true, true, false),
+                new CommandObject("Body of selected request/response as file (%B)", "echo %B && cat %B", groupOther, true, true, false)
         );
+    }
+
+    private void refreshVersion() {
+        if (!this.version.equals(this.callbacks.loadExtensionSetting("version"))) {
+            this.callbacks.saveExtensionSetting("version", version);
+            setFirstStart();
+        }
     }
 
     private boolean isFirstStart() {
