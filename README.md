@@ -2,6 +2,8 @@
 
 Adds a customizable "Send to..."-context-menu to your BurpSuite.
 
+![Burp-Send-To-Extension Tab](images/burp-send-to-extension-intro.png)
+
 ## Configuration
 
 After loading the extension the "Send to"-Tab contains all necessary options to configure the "Send to"-context-menu. 
@@ -20,6 +22,7 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 	* **%S:** will be replaced with the selected text
 	* **%F:** will be replaced with the path to a temporary file containing the selected text
 	* **%R:** will be replaced with the path to a temporary file containing the content of the focused request/response
+	* **%E:** will be replaced with the path to a temporary file containing the header of the focused request/response
 	* **%B:** will be replaced with the path to a temporary file containing the body of the focused request/response
 * **Group:** the name of the sub-menu in which this entry will be shown. Can be left blank.
 * **Run in terminal:** defines whether a terminal-window should appear in which the configured command is executed. By default "xterm" is used as terminal-emulator. You can change the terminal-emulator in the "Miscellaneous Options" to your liking.
