@@ -20,8 +20,8 @@ public class SendToTable extends JTable {
         COMMAND(2),
         GROUP(3),
         RUN_IN_TERMINAL(4),
-        SHOW_PREVIEW(5),
-        OUTPUT_REPLACE_SELECTION(6);
+        OUTPUT_REPLACE_SELECTION(5),
+        SHOW_PREVIEW(6);
 
         private final int index;
 
@@ -48,8 +48,8 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Command");
         this.defaultModel.addColumn("Group name");
         this.defaultModel.addColumn("Run in terminal");
-        this.defaultModel.addColumn("Show preview");
         this.defaultModel.addColumn("Output should replace selection");
+        this.defaultModel.addColumn("Show preview");
         setModel(this.defaultModel);
         hideColumns(Column.ID, Column.COMMAND);
     }
@@ -154,8 +154,8 @@ public class SendToTable extends JTable {
                 commandObject.getCommand(),
                 commandObject.getGroup(),
                 commandObject.isRunInTerminal(),
-                commandObject.shouldShowPreview(),
-                commandObject.shouldOutputReplaceSelection()
+                commandObject.shouldOutputReplaceSelection(),
+                commandObject.shouldShowPreview()
         });
     }
 
@@ -173,8 +173,8 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
         model.setValueAt(commandObject.getCommand(), rowIndex, Column.COMMAND.getIndex());
         model.setValueAt(commandObject.isRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
-        model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
         model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
+        model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
     }
 
     public void editCommandObject(CommandObject commandObject) {
