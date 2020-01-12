@@ -42,7 +42,13 @@ public class SendToContextMenu implements IContextMenuFactory {
         }
 
         public void refreshStatus(List<Map<String, IPlaceholder>> placeholders) {
-            setEnabled(commandObject.isValid(placeholders));
+            List<Map<String, IPlaceholder>> validEntries = commandObject.getValid(placeholders);
+            if (placeholders.size() > 1) {
+                setText(commandObject.getName() + " (" + validEntries.size() + "/" + placeholders.size() + ")");
+            } else {
+                setText(commandObject.getName());
+            }
+            setEnabled(validEntries.size() > 0);
         }
     }
 
