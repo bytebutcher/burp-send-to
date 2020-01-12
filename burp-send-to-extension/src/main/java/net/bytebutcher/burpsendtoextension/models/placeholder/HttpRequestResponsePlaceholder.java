@@ -13,7 +13,7 @@ public class HttpRequestResponsePlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         byte[] requestResponse = getRequestResponse();
         return requestResponse != null ? new String(requestResponse) : null;
     }

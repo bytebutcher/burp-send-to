@@ -18,7 +18,7 @@ public class SelectedTextPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         String value = null;
         int[] selectionBounds = getSelectionBounds();
         if (selectionBounds != null) {

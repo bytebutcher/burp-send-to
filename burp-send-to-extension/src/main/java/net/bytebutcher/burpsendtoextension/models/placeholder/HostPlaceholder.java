@@ -13,7 +13,7 @@ public class HostPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         return getRequestResponseHolder().getHttpRequestResponse().getHttpService().getHost();
     }
 }

@@ -14,7 +14,7 @@ public class UrlPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         return Objects.toString(getRequestResponseHolder().getRequestInfo().getUrl());
     }
 

@@ -2,10 +2,12 @@ package net.bytebutcher.burpsendtoextension.models;
 
 import com.google.common.collect.Sets;
 import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CommandObject {
 
@@ -46,7 +48,7 @@ public class CommandObject {
         return group;
     }
 
-    public boolean isRunInTerminal() {
+    public boolean shouldRunInTerminal() {
         return this.runInTerminal;
     }
 
@@ -60,6 +62,10 @@ public class CommandObject {
 
     public boolean shouldOutputReplaceSelection() {
         return outputReplaceSelection;
+    }
+
+    public boolean shouldRunInBackground() {
+        return !runInTerminal && !outputReplaceSelection;
     }
 
     @Override
@@ -105,11 +111,20 @@ public class CommandObject {
      * Returns the command while all placeholders are replaced with their associated value.
      * @throws Exception when retrieving/replacing a placeholder failed.
      */
-    public String getFormattedCommand(Map<String, IPlaceholder> placeholderMap) throws Exception {
-        String originalCommand = getCommand();
-        for (String internalPlaceHolder : getInternalPlaceHolders()) {
-            originalCommand = placeholderMap.get(internalPlaceHolder).replace(originalCommand);
+    public String getFormattedCommand(List<Map<String, IPlaceholder>> placeholderMap) throws Exception {
+        try {
+            String originalCommand = getCommand();
+            for (String internalPlaceHolder : getInternalPlaceHolders()) {
+                String value = placeholderMap.stream().map(m -> m.get(internalPlaceHolder)).map(iPlaceholder -> iPlaceholder.getValue(internalPlaceHolder)).collect(Collectors.joining(","));
+                boolean doesRequireShellEscape = placeholderMap.get(0).get(internalPlaceHolder).doesRequireShellEscape();
+                originalCommand = originalCommand.replace(internalPlaceHolder, doesRequireShellEscape ? "'" + StringUtils.shellEscape(value) + "'" : value);
+            }
+            return originalCommand;
+        } catch (RuntimeException e) {
+            // Rethrow from unchecked to checked exception. We only deal with RuntimeException here, since streams
+            // (here: placeholderMap.stream()) does not handle checked exceptions well.
+            throw new Exception(e);
         }
-        return originalCommand;
     }
+
 }

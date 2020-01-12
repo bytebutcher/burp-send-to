@@ -22,6 +22,7 @@ public class SendToAddDialog {
     private JTextField txtGroup;
     private JRadioButton chkRunInTerminal;
     private JRadioButton chkOutputShouldReplaceSelection;
+    private JRadioButton chkRunInBackground;
     private final JDialog dialog;
 
     private boolean success = false;
@@ -43,7 +44,8 @@ public class SendToAddDialog {
         txtCommand.setText(commandObject.getCommand());
         txtGroup.setText(commandObject.getGroup());
         chkShowPreviewPriorToExecution.setSelected(commandObject.shouldShowPreview());
-        chkRunInTerminal.setSelected(commandObject.isRunInTerminal());
+        chkRunInBackground.setSelected(commandObject.shouldRunInBackground());
+        chkRunInTerminal.setSelected(commandObject.shouldRunInTerminal());
         chkOutputShouldReplaceSelection.setSelected(commandObject.shouldOutputReplaceSelection());
     }
 
@@ -151,7 +153,7 @@ public class SendToAddDialog {
         return txtGroup.getText();
     }
 
-    private boolean isRunInTerminal() {
+    private boolean shouldRunInTerminal() {
         return chkRunInTerminal.isSelected();
     }
 
@@ -164,7 +166,7 @@ public class SendToAddDialog {
     }
 
     public CommandObject getCommandObject() {
-        return new CommandObject(getName(), getCommand(), getGroup(), isRunInTerminal(), shouldShowPreview(), shouldOutputReplaceSelection());
+        return new CommandObject(getName(), getCommand(), getGroup(), shouldRunInTerminal(), shouldShowPreview(), shouldOutputReplaceSelection());
     }
 
     {
@@ -240,26 +242,26 @@ public class SendToAddDialog {
         chkRunInTerminal.setDisplayedMnemonicIndex(0);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(chkRunInTerminal, gbc);
         chkOutputShouldReplaceSelection = new JRadioButton();
         chkOutputShouldReplaceSelection.setText("Output should replace selection");
-        chkOutputShouldReplaceSelection.setMnemonic('O');
-        chkOutputShouldReplaceSelection.setDisplayedMnemonicIndex(0);
+        chkOutputShouldReplaceSelection.setMnemonic('R');
+        chkOutputShouldReplaceSelection.setDisplayedMnemonicIndex(14);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(chkOutputShouldReplaceSelection, gbc);
         chkShowPreviewPriorToExecution = new JCheckBox();
         chkShowPreviewPriorToExecution.setSelected(true);
         chkShowPreviewPriorToExecution.setText("Show preview prior to execution");
-        chkShowPreviewPriorToExecution.setMnemonic('S');
-        chkShowPreviewPriorToExecution.setDisplayedMnemonicIndex(0);
+        chkShowPreviewPriorToExecution.setMnemonic('P');
+        chkShowPreviewPriorToExecution.setDisplayedMnemonicIndex(5);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 2, 2, 2);
         panel1.add(chkShowPreviewPriorToExecution, gbc);
@@ -281,6 +283,16 @@ public class SendToAddDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(2, 2, 2, 2);
         panel1.add(txtName, gbc);
+        chkRunInBackground = new JRadioButton();
+        chkRunInBackground.setSelected(true);
+        chkRunInBackground.setText("Run in background");
+        chkRunInBackground.setMnemonic('B');
+        chkRunInBackground.setDisplayedMnemonicIndex(7);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(chkRunInBackground, gbc);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         formPanel.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -300,6 +312,7 @@ public class SendToAddDialog {
         buttonGroup = new ButtonGroup();
         buttonGroup.add(chkRunInTerminal);
         buttonGroup.add(chkOutputShouldReplaceSelection);
+        buttonGroup.add(chkRunInBackground);
     }
 
     /**

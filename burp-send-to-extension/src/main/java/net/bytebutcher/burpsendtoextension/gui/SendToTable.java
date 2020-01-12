@@ -153,7 +153,7 @@ public class SendToTable extends JTable {
                 commandObject.getName(),
                 commandObject.getCommand(),
                 commandObject.getGroup(),
-                commandObject.isRunInTerminal(),
+                commandObject.shouldRunInTerminal(),
                 commandObject.shouldOutputReplaceSelection(),
                 commandObject.shouldShowPreview()
         });
@@ -172,7 +172,7 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.getName(), rowIndex, Column.NAME.getIndex());
         model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
         model.setValueAt(commandObject.getCommand(), rowIndex, Column.COMMAND.getIndex());
-        model.setValueAt(commandObject.isRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
+        model.setValueAt(commandObject.shouldRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
         model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
     }

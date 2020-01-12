@@ -17,7 +17,7 @@ public class CookiesPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         List<ICookie> cookies = Lists.newArrayList();
         switch (getContext()) {
             case HTTP_REQUEST:

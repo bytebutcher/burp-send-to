@@ -81,7 +81,7 @@
           </component>
           <component id="938ed" class="javax.swing.JRadioButton" binding="chkRunInTerminal">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
@@ -90,21 +90,21 @@
           </component>
           <component id="579d8" class="javax.swing.JRadioButton" binding="chkOutputShouldReplaceSelection">
             <constraints>
-              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="&amp;Output should replace selection"/>
+              <text value="Output should &amp;replace selection"/>
             </properties>
           </component>
           <component id="1d8bf" class="javax.swing.JCheckBox" binding="chkShowPreviewPriorToExecution">
             <constraints>
-              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <gridbag top="5" left="2" bottom="2" right="2" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <selected value="true"/>
-              <text value="&amp;Show preview prior to execution"/>
+              <text value="Show &amp;preview prior to execution"/>
             </properties>
           </component>
           <component id="532e8" class="javax.swing.JTextField" binding="txtGroup">
@@ -124,6 +124,16 @@
               <gridbag top="2" left="2" bottom="2" right="2" weightx="1.0" weighty="0.0"/>
             </constraints>
             <properties/>
+          </component>
+          <component id="29c23" class="javax.swing.JRadioButton" binding="chkRunInBackground">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <selected value="true"/>
+              <text value="Run in &amp;background"/>
+            </properties>
           </component>
         </children>
       </grid>
@@ -164,6 +174,7 @@
     <group name="groupOutput">
       <member id="938ed"/>
       <member id="579d8"/>
+      <member id="29c23"/>
     </group>
   </buttonGroups>
 </form>

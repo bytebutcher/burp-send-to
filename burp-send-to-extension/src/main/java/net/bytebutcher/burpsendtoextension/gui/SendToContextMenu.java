@@ -195,7 +195,7 @@ public class SendToContextMenu implements IContextMenuFactory {
 
     private String[] formatCommand(CommandObject commandObject) throws Exception {
         String[] commandToBeExecuted;
-        String command = commandObject.getFormattedCommand(placeholders.get(0));
+        String command = commandObject.getFormattedCommand(placeholders);
 
         if (commandObject.shouldShowPreview()) {
             SendToPreviewDialog previewDialog = new SendToPreviewDialog(
@@ -211,7 +211,7 @@ public class SendToContextMenu implements IContextMenuFactory {
             command = previewDialog.getCommand();
         }
 
-        if (commandObject.isRunInTerminal()) {
+        if (commandObject.shouldRunInTerminal()) {
             commandToBeExecuted = formatCommandForRunningInTerminal(command);
         } else {
             commandToBeExecuted = formatCommandRunningOnOperatingSystem(command);

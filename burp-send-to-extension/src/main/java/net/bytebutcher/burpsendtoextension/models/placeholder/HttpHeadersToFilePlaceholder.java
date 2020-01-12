@@ -15,7 +15,7 @@ public class HttpHeadersToFilePlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         List<String> headers = Lists.newArrayList();
         switch(getContext()) {
             case HTTP_REQUEST:

@@ -15,7 +15,7 @@ public class UrlPathPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         return Optional.ofNullable(getRequestResponseHolder().getRequestInfo().getUrl()).map(URL::getPath).orElse(null);
     }
 

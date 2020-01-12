@@ -13,7 +13,7 @@ public class HttpBodyToFilePlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         switch(getContext()) {
             case HTTP_REQUEST:
                 return getRequestResponseHolder().getRequestInfo().getBody();

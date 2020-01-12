@@ -13,7 +13,7 @@ public class PortPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         return String.valueOf(getRequestResponseHolder().getHttpRequestResponse().getHttpService().getPort());
     }
 }

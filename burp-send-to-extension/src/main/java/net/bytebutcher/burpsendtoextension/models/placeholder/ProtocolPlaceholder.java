@@ -13,7 +13,7 @@ public class ProtocolPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getValue() {
+    protected String getInternalValue() {
         return getRequestResponseHolder().getHttpRequestResponse().getHttpService().getProtocol();
     }
 }

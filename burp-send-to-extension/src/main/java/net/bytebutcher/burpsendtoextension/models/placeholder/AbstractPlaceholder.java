@@ -3,7 +3,6 @@ package net.bytebutcher.burpsendtoextension.models.placeholder;
 import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
 import com.google.common.collect.Lists;
-import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,15 +16,15 @@ public abstract class AbstractPlaceholder implements IPlaceholder {
 
     private final RequestResponseHolder requestResponseHolder;
     private final String placeholder;
-    private final boolean doShellEscape;
+    private final boolean doesRequireShellEscape;
     private final boolean doWriteToFile;
     private final IContextMenuInvocation contextMenuInvocation;
     private Context context;
 
-    public AbstractPlaceholder(String placeholder, boolean doShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder, IContextMenuInvocation contextMenuInvocation) {
+    public AbstractPlaceholder(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder, IContextMenuInvocation contextMenuInvocation) {
         this.requestResponseHolder = requestResponseHolder;
         this.placeholder = placeholder;
-        this.doShellEscape = doShellEscape;
+        this.doesRequireShellEscape = doesRequireShellEscape;
         this.doWriteToFile = doWriteToFile;
         this.contextMenuInvocation = contextMenuInvocation;
         this.context = getContext();
@@ -84,22 +83,29 @@ public abstract class AbstractPlaceholder implements IPlaceholder {
      * @return the value associated with the placeholder.
      */
     @Nullable
-    protected abstract String getValue() throws Exception;
+    protected abstract String getInternalValue() throws Exception;
+
+    /**
+     * Returns whether the placeholder requires shell-escaping.
+     */
+    public boolean doesRequireShellEscape() {
+        return doesRequireShellEscape;
+    }
 
     @Override
-    public String replace(String text) throws Exception {
+    public String getValue(String text) throws RuntimeException {
         try {
-            String value = Optional.ofNullable(getValue()).orElse("");
+            String value = Optional.ofNullable(getInternalValue()).orElse("");
             if (doWriteToFile) {
                 value = writeToFile(value);
             }
-            return text.replace(getPlaceholder(), doShellEscape ? "'" + StringUtils.shellEscape(value) + "'" : value);
+            return value;
         } catch (Exception e) {
             // This exception is thrown when the placeholder can not be constructed (e.g. no text selected,
             // no url-query-parameter present, etc.). This is done in favor of returning empty text.
             // In practice this exception should not be thrown anyway since menu items which contain this placeholder
             // are disabled and can not be selected anyway (see isValid()).
-            throw new Exception("Error replacing placeholder " + getPlaceholder() + " !", e);
+            throw new RuntimeException("Error replacing placeholder " + getPlaceholder() + " !", e);
         }
     }
 
@@ -118,7 +124,7 @@ public abstract class AbstractPlaceholder implements IPlaceholder {
     @Override
     public boolean isValid() {
         try {
-            return getValue() != null;
+            return getInternalValue() != null;
         } catch (Exception e) {
             return false;
         }
