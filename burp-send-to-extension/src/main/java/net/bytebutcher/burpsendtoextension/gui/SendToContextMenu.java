@@ -174,7 +174,10 @@ public class SendToContextMenu implements IContextMenuFactory {
 
             logCommandToBeExecuted(commandToBeExecuted);
             Process process = new ProcessBuilder(commandToBeExecuted).start();
-            return StringUtils.fromInputStream(process.getInputStream());
+            if (commandObject.shouldOutputReplaceSelection()) {
+                return StringUtils.fromInputStream(process.getInputStream());
+            }
+            return null;
         } catch (Exception e) {
             DialogUtil.showErrorDialog(
                     burpExtender.getParent(),
