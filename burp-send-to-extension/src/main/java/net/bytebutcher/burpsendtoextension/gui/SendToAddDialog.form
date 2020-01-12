@@ -29,6 +29,7 @@
               <gridbag top="2" left="2" bottom="2" right="10" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <labelFor value="ab56a"/>
               <text value="&amp;Name:"/>
             </properties>
           </component>
@@ -38,7 +39,8 @@
               <gridbag top="2" left="2" bottom="2" right="10" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="&amp;Command:"/>
+              <labelFor value="476e7"/>
+              <text value="Co&amp;mmand:"/>
             </properties>
           </component>
           <grid id="5d0aa" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -76,6 +78,7 @@
               <gridbag top="2" left="2" bottom="2" right="10" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
+              <labelFor value="532e8"/>
               <text value="&amp;Group:"/>
             </properties>
           </component>
@@ -85,7 +88,7 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="&amp;Run in terminal"/>
+              <text value="Run in &amp;terminal"/>
             </properties>
           </component>
           <component id="579d8" class="javax.swing.JRadioButton" binding="chkOutputShouldReplaceSelection">

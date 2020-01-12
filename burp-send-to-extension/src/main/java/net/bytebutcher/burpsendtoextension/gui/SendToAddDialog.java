@@ -205,8 +205,8 @@ public class SendToAddDialog {
         panel1.add(label2, gbc);
         final JLabel label3 = new JLabel();
         label3.setText("Command:");
-        label3.setDisplayedMnemonic('C');
-        label3.setDisplayedMnemonicIndex(0);
+        label3.setDisplayedMnemonic('M');
+        label3.setDisplayedMnemonicIndex(2);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -238,8 +238,8 @@ public class SendToAddDialog {
         panel1.add(label4, gbc);
         chkRunInTerminal = new JRadioButton();
         chkRunInTerminal.setText("Run in terminal");
-        chkRunInTerminal.setMnemonic('R');
-        chkRunInTerminal.setDisplayedMnemonicIndex(0);
+        chkRunInTerminal.setMnemonic('T');
+        chkRunInTerminal.setDisplayedMnemonicIndex(7);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 4;
@@ -308,6 +308,9 @@ public class SendToAddDialog {
         panel3.add(btnOk, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel3.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        label2.setLabelFor(txtName);
+        label3.setLabelFor(txtCommand);
+        label4.setLabelFor(txtGroup);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(chkRunInTerminal);
