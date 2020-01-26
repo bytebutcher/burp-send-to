@@ -13,8 +13,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
@@ -46,51 +44,28 @@ public class SendToTab {
         this.lblSettings.setIcon(this.burpExtender.createImageIcon("/panel_settings.png", "", 24, 24));
         this.sendToTableListener = new SendToTableListener(this.tblSendTo, this.sendToTable, burpExtender);
         this.tblSendTo.getModel().addTableModelListener(sendToTableListener);
-        btnAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add context menu entry", sendToTable.getCommandObjects());
-                        if (addDialog.run()) {
-                            sendToTableListener.onAddButtonClick(e, addDialog.getCommandObject());
-                        }
-                    }
-                }).start();
+        btnAdd.addActionListener(e -> new Thread(() -> {
+            SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add context menu entry", sendToTable.getCommandObjects());
+            if (addDialog.run()) {
+                sendToTableListener.onAddButtonClick(e, addDialog.getCommandObject());
+            }
+        }).start());
+        btnEdit.addActionListener(e -> {
+            CommandObject selectedCommandObject = sendToTable.getSelectedCommandObject();
+            SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit context menu entry", sendToTable.getCommandObjects(), selectedCommandObject);
+            if (editDialog.run()) {
+                sendToTableListener.onEditButtonClick(e, editDialog.getCommandObject());
             }
         });
-        btnEdit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CommandObject selectedCommandObject = sendToTable.getSelectedCommandObject();
-                SendToAddDialog editDialog = new SendToAddDialog(getParent(), "Edit context menu entry", sendToTable.getCommandObjects(), selectedCommandObject);
-                if (editDialog.run()) {
-                    sendToTableListener.onEditButtonClick(e, editDialog.getCommandObject());
-                }
+        btnRemove.addActionListener(e -> {
+            boolean result = DialogUtil.showConfirmationDialog(getParent(), "Delete context menu entries",
+                    "Do you really want to delete the selected context menu entries?");
+            if (result) {
+                sendToTableListener.onRemoveButtonClick(e);
             }
         });
-        btnRemove.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean result = DialogUtil.showConfirmationDialog(getParent(), "Delete context menu entries",
-                        "Do you really want to delete the selected context menu entries?");
-                if (result) {
-                    sendToTableListener.onRemoveButtonClick(e);
-                }
-            }
-        });
-        btnUp.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendToTableListener.onUpButtonClick(e);
-            }
-        });
-        btnDown.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendToTableListener.onDownButtonClick(e);
-            }
-        });
+        btnUp.addActionListener(e -> sendToTableListener.onUpButtonClick(e));
+        btnDown.addActionListener(e -> sendToTableListener.onDownButtonClick(e));
         lblHelp.addMouseListener(new LabelIconImageHoverAdapter(lblHelp, "/panel_help.png", "/panel_help_highlighted.png"));
         lblSettings.addMouseListener(new LabelIconImageHoverAdapter(lblSettings, "/panel_settings.png", "/panel_settings_highlighted.png"));
         lblHelp.addMouseListener(new MouseAdapter() {
@@ -112,7 +87,7 @@ public class SendToTab {
                 sendToTabSettingsContextMenu.show(lblSettings, lblSettings.getX() + lblSettings.getWidth(), lblSettings.getY());
             }
         });
-        txtRunInTerminal.setText(this.burpExtender.getConfig().getRunInTerminalCommand());
+        txtRunInTerminal.setText(BurpExtender.getConfig().getRunInTerminalCommand());
         txtRunInTerminal.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 save();
@@ -127,7 +102,7 @@ public class SendToTab {
             }
 
             public void save() {
-                burpExtender.getConfig().setRunInTerminalCommand(txtRunInTerminal.getText());
+                BurpExtender.getConfig().setRunInTerminalCommand(txtRunInTerminal.getText());
             }
         });
         btnRunInTerminalHelp.addActionListener(new ToolTipActionListener(btnRunInTerminalHelp, "" +
@@ -144,12 +119,12 @@ public class SendToTab {
 
     private void resetSendToTableData() {
         sendToTable.clearTable();
-        sendToTable.addCommandObjects(this.burpExtender.getConfig().getDefaultSendToTableData());
+        sendToTable.addCommandObjects(BurpExtender.getConfig().getDefaultSendToTableData());
     }
 
     private void resetRunInTerminalOption() {
-        this.burpExtender.getConfig().resetRunInTerminalCommand();
-        txtRunInTerminal.setText(this.burpExtender.getConfig().getRunInTerminalCommand());
+        BurpExtender.getConfig().resetRunInTerminalCommand();
+        txtRunInTerminal.setText(BurpExtender.getConfig().getRunInTerminalCommand());
     }
 
     /**

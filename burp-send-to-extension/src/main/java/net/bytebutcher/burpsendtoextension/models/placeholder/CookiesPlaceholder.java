@@ -4,12 +4,13 @@ import burp.IContextMenuInvocation;
 import burp.ICookie;
 import burp.RequestResponseHolder;
 import com.google.common.collect.Lists;
+import net.bytebutcher.burpsendtoextension.models.Context;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CookiesPlaceholder extends AbstractPlaceholder {
+public class CookiesPlaceholder extends AbstractRequestResponseInfoPlaceholder {
 
     public CookiesPlaceholder(RequestResponseHolder requestResponseHolder, IContextMenuInvocation iContextMenuInvocation) {
         super("%C", true, false, requestResponseHolder, iContextMenuInvocation);
@@ -17,14 +18,14 @@ public class CookiesPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getInternalValue() {
+    protected String getInternalValue(Context context) {
         List<ICookie> cookies = Lists.newArrayList();
-        switch (getContext()) {
+        switch (context) {
             case HTTP_REQUEST:
-                cookies = getRequestResponseHolder().getRequestInfo().getCookies();
+                cookies = getRequestInfo().getCookies();
                 break;
             case HTTP_RESPONSE:
-                cookies = getRequestResponseHolder().getResponseInfo().getCookies();
+                cookies = getResponseInfo().getCookies();
                 break;
         }
         return cookies.isEmpty() ? null : cookies.stream().map(iCookie -> iCookie.getName() + "=" + iCookie.getValue()).collect(Collectors.joining(","));

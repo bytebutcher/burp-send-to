@@ -2,10 +2,11 @@ package net.bytebutcher.burpsendtoextension.models.placeholder;
 
 import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
+import net.bytebutcher.burpsendtoextension.models.Context;
 
 import javax.annotation.Nullable;
 
-public class PortPlaceholder extends AbstractPlaceholder {
+public class PortPlaceholder extends AbstractRequestPlaceholder {
 
     public PortPlaceholder(RequestResponseHolder requestResponseHolder, IContextMenuInvocation iContextMenuInvocation) {
         super("%P", false, false, requestResponseHolder, iContextMenuInvocation);
@@ -13,7 +14,7 @@ public class PortPlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getInternalValue() {
-        return String.valueOf(getRequestResponseHolder().getHttpRequestResponse().getHttpService().getPort());
+    protected String getInternalValue(Context context) {
+        return String.valueOf(getHttpRequestResponse().getHttpService().getPort());
     }
 }

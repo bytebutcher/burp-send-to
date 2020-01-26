@@ -128,7 +128,7 @@ public class SendToTable extends JTable {
 
     public CommandObject getCommandObjectById(String commandId) {
         if (commandId == null) {
-            burpExtender.getCallbacks().printError("CommandObject id should not be null!");
+            BurpExtender.printErr("CommandObject id should not be null!");
             throw new IllegalArgumentException("CommandObject id should not be null!");
         }
         for (int i = 0; i < this.getDefaultModel().getRowCount(); i++) {
@@ -137,7 +137,7 @@ public class SendToTable extends JTable {
                 return commandObject;
             }
         }
-        burpExtender.getCallbacks().printError("No command found with the specified id!");
+        BurpExtender.printErr("No command found with the specified id!");
         throw new IllegalStateException("No command found with the specified id!");
     }
 
@@ -151,7 +151,7 @@ public class SendToTable extends JTable {
         getDefaultModel().addRow(new Object[]{
                 commandObject.getId(),
                 commandObject.getName(),
-                commandObject.getCommand(),
+                commandObject.getFormat(),
                 commandObject.getGroup(),
                 commandObject.shouldRunInTerminal(),
                 commandObject.shouldOutputReplaceSelection(),
@@ -171,7 +171,7 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.getId(), rowIndex, Column.ID.getIndex());
         model.setValueAt(commandObject.getName(), rowIndex, Column.NAME.getIndex());
         model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
-        model.setValueAt(commandObject.getCommand(), rowIndex, Column.COMMAND.getIndex());
+        model.setValueAt(commandObject.getFormat(), rowIndex, Column.COMMAND.getIndex());
         model.setValueAt(commandObject.shouldRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
         model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());

@@ -2,10 +2,11 @@ package net.bytebutcher.burpsendtoextension.models.placeholder;
 
 import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
+import net.bytebutcher.burpsendtoextension.models.Context;
 
 import javax.annotation.Nullable;
 
-public class HttpBodyToFilePlaceholder extends AbstractPlaceholder {
+public class HttpBodyToFilePlaceholder extends AbstractRequestResponseInfoPlaceholder {
 
     public HttpBodyToFilePlaceholder(RequestResponseHolder requestResponseHolder, IContextMenuInvocation iContextMenuInvocation) {
         super("%B", false, true, requestResponseHolder, iContextMenuInvocation);
@@ -13,12 +14,12 @@ public class HttpBodyToFilePlaceholder extends AbstractPlaceholder {
 
     @Nullable
     @Override
-    protected String getInternalValue() {
-        switch(getContext()) {
+    protected String getInternalValue(Context context) {
+        switch(context) {
             case HTTP_REQUEST:
-                return getRequestResponseHolder().getRequestInfo().getBody();
+                return getRequestInfo().getBody();
             case HTTP_RESPONSE:
-                return getRequestResponseHolder().getResponseInfo().getBody();
+                return getResponseInfo().getBody();
         }
         return null;
     }

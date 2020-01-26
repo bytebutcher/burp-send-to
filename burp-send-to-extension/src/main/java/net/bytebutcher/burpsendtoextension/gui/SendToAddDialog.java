@@ -41,7 +41,7 @@ public class SendToAddDialog {
         this(parent, title, commandObjects);
         commandObjects.remove(commandObject);
         txtName.setText(commandObject.getName());
-        txtCommand.setText(commandObject.getCommand());
+        txtCommand.setText(commandObject.getFormat());
         txtGroup.setText(commandObject.getGroup());
         chkShowPreviewPriorToExecution.setSelected(commandObject.shouldShowPreview());
         chkRunInBackground.setSelected(commandObject.shouldRunInBackground());
@@ -114,9 +114,9 @@ public class SendToAddDialog {
                 "<p>%M = HTTP-Method</p>" +
                 "<p>%S = Selected text</p>" +
                 "<p>%F = Path to file containing selected text</p>" +
-                "<p>%R = Path to file containing focused HTTP-request/-response</p>" +
-                "<p>%B = Path to file containing HTTP-body of focused request/response</p>" +
-                "<p>%E = Path to file containing HTTP-header of focused request/response</p>" +
+                "<p>%R = Path to file containing HTTP-request/-response</p>" +
+                "<p>%B = Path to file containing body of HTTP-request/-response</p>" +
+                "<p>%E = Path to file containing header of HTTP-request/-response</p>" +
                 "</html>")
         );
     }

@@ -1,8 +1,13 @@
 package net.bytebutcher.burpsendtoextension.models;
 
+import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.SerializedName;
+import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponseInfoPlaceholder;
+import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponsePlaceholder;
 import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import java.util.*;
@@ -14,24 +19,25 @@ public class CommandObject {
 
     private String id = UUID.randomUUID().toString();
     private String name;
-    private String command;
+    @SerializedName(value="format", alternate={"command"}) // Changed field name from "command" to "format" in version 1.1
+    private String format;
     private String group;
     private boolean runInTerminal;
     private boolean showPreview;
     private boolean outputReplaceSelection;
     private Set<String> internalPlaceHolders;
 
-    public CommandObject(String name, String command, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
+    public CommandObject(String name, String format, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
         this.name = name;
-        this.command = command;
+        this.format = format;
         this.group = group;
         this.runInTerminal = runInTerminal;
         this.showPreview = showPreview;
         this.outputReplaceSelection = outputReplaceSelection;
     }
 
-    public CommandObject(String id, String name, String command, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
-        this(name, command, group, runInTerminal, showPreview, outputReplaceSelection);
+    public CommandObject(String id, String name, String format, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection) {
+        this(name, format, group, runInTerminal, showPreview, outputReplaceSelection);
         this.id = id;
     }
 
@@ -41,8 +47,8 @@ public class CommandObject {
         return this.name;
     }
 
-    public String getCommand() {
-        return this.command;
+    public String getFormat() {
+        return this.format;
     }
 
     public String getGroup() {
@@ -80,8 +86,8 @@ public class CommandObject {
     private Set<String> getInternalPlaceHolders() {
         if (internalPlaceHolders == null) {
             internalPlaceHolders = Sets.newHashSet();
-            if (getCommand() != null && !getCommand().isEmpty()) {
-                Matcher m = Pattern.compile("(\\%[A-Z])").matcher(getCommand());
+            if (getFormat() != null && !getFormat().isEmpty()) {
+                Matcher m = Pattern.compile("(\\%[A-Z])").matcher(getFormat());
                 while (m.find()) {
                     internalPlaceHolders.add(m.group(1));
                 }
@@ -95,20 +101,20 @@ public class CommandObject {
         return Objects.hash(id);
     }
 
-    public List<Map<String, IPlaceholder>> getValid(List<Map<String, IPlaceholder>> placeholders) {
+    public List<Map<String, IPlaceholder>> getValid(List<Map<String, IPlaceholder>> placeholders, Context context) {
         List<Map<String, IPlaceholder>> validItems = Lists.newArrayList();
         for (Map<String, IPlaceholder> placeholderMap : placeholders) {
-            if (isValid(placeholderMap)) {
+            if (isValid(placeholderMap, context)) {
                 validItems.add(placeholderMap);
             }
         }
         return validItems;
     }
 
-    private boolean isValid(Map<String, IPlaceholder> placeholderMap) {
+    private boolean isValid(Map<String, IPlaceholder> placeholderMap, Context context) {
         for (String placeholder : getInternalPlaceHolders()) {
             if (placeholderMap.containsKey(placeholder)) {
-                if (!placeholderMap.get(placeholder).isValid()) {
+                if (!placeholderMap.get(placeholder).isValid(context)) {
                     return false;
                 }
             }
@@ -116,24 +122,68 @@ public class CommandObject {
         return true;
     }
 
+    public boolean doesRequireRequestResponse(Map<String, IPlaceholder> placeholderMap) {
+        for (String placeholder : getInternalPlaceHolders()) {
+            if (placeholderMap.containsKey(placeholder)) {
+                if (placeholderMap.get(placeholder) instanceof AbstractRequestResponseInfoPlaceholder || placeholderMap.get(placeholder) instanceof AbstractRequestResponsePlaceholder) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
-     * Returns the command while all placeholders are replaced with their associated value.
+     * Returns the given command while all placeholders are replaced with their associated value as ProcessBuilder.
      * @throws Exception when retrieving/replacing a placeholder failed.
      */
-    public String getFormattedCommand(List<Map<String, IPlaceholder>> placeholderMap) throws Exception {
+    public ProcessBuilder getProcessBuilder(String command) throws Exception {
+        if (shouldRunInTerminal()) {
+            return new ProcessBuilder(formatCommandForRunningInTerminal(command));
+        } else {
+            return new ProcessBuilder(formatCommandForRunningOnOperatingSystem(command));
+        }
+    }
+
+    /**
+     * Returns the command while all placeholders are replaced with their associated value as String.
+     * @throws Exception when retrieving/replacing a placeholder failed.
+     */
+    public String getCommand(List<Map<String, IPlaceholder>> placeholderMap, Context context) throws Exception {
         try {
-            String originalCommand = getCommand();
+            String command = getFormat();
             for (String internalPlaceHolder : getInternalPlaceHolders()) {
-                String value = getValid(placeholderMap).stream().map(m -> m.get(internalPlaceHolder)).map(iPlaceholder -> iPlaceholder.getValue(internalPlaceHolder)).collect(Collectors.joining(","));
+                String value = getValid(placeholderMap, context).stream().map(m -> m.get(internalPlaceHolder)).map(iPlaceholder -> iPlaceholder.getValue(context)).collect(Collectors.joining(","));
                 boolean doesRequireShellEscape = placeholderMap.get(0).get(internalPlaceHolder).doesRequireShellEscape();
-                originalCommand = originalCommand.replace(internalPlaceHolder, doesRequireShellEscape ? "'" + StringUtils.shellEscape(value) + "'" : value);
+                command = command.replace(internalPlaceHolder, doesRequireShellEscape ? "'" + StringUtils.shellEscape(value) + "'" : value);
             }
-            return originalCommand;
+            return command;
         } catch (RuntimeException e) {
             // Rethrow from unchecked to checked exception. We only deal with RuntimeException here, since streams
             // (here: placeholderMap.stream()) does not handle checked exceptions well.
             throw new Exception(e);
         }
+    }
+
+    private String[] formatCommandForRunningOnOperatingSystem(String command) {
+        String[] commandToBeExecuted;
+        if (OsUtils.isWindows()) {
+            commandToBeExecuted = new String[]{"cmd", "/c", command};
+        } else {
+            commandToBeExecuted = new String[]{"/bin/bash", "-c", command};
+        }
+        return commandToBeExecuted;
+    }
+
+    private String[] formatCommandForRunningInTerminal(String command) {
+        String[] commandToBeExecuted = BurpExtender.getConfig().getRunInTerminalCommand().split(" ");
+        for (int i = 0; i < commandToBeExecuted.length; i++) {
+            String commandPart = commandToBeExecuted[i];
+            if ("%C".equals(commandPart)) {
+                commandToBeExecuted[i] = command;
+            }
+        }
+        return commandToBeExecuted;
     }
 
 }

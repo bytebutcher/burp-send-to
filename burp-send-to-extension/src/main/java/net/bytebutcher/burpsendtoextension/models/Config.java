@@ -14,11 +14,11 @@ public class Config {
 
     private final IBurpExtenderCallbacks callbacks;
     private BurpExtender burpExtender;
-    private String version = "1.0";
+    private String version = "1.1";
 
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
-        this.callbacks = burpExtender.getCallbacks();
+        this.callbacks = BurpExtender.getCallbacks();
         refreshVersion();
     }
 
@@ -76,19 +76,19 @@ public class Config {
                 new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, true, true, false),
                 new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, true, true, false),
                 // other
-                new CommandObject("Host (%H)", "echo %H", groupOther, false, true, true),
-                new CommandObject("Port (%P)", "echo %P", groupOther, false, true, true),
-                new CommandObject("Protocol (%T)", "echo %T", groupOther, false, true, true),
-                new CommandObject("URL (%U)", "echo %U", groupOther, false, true, true),
-                new CommandObject("URL Path (%A)", "echo %A", groupOther, false, true, true),
-                new CommandObject("URL Query (%Q)", "echo %Q", groupOther, false, true, true),
-                new CommandObject("Cookies (%C)", "echo %C", groupOther, false, true, true),
-                new CommandObject("HTTP Method (%M)", "echo %M", groupOther, false, true, true),
-                new CommandObject("Selected text (%S)", "echo %S", groupOther, false, true, true),
-                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, false, true, false),
-                new CommandObject("Selected request/response as file (%R)", "echo %R && cat %R", groupOther, false, true, false),
-                new CommandObject("Headers of selected request/response as file (%E)", "echo %E && cat %E", groupOther, false, true, false),
-                new CommandObject("Body of selected request/response as file (%B)", "echo %B && cat %B", groupOther, false, true, false)
+                new CommandObject("Host (%H)", "echo %H", groupOther, true, true, true),
+                new CommandObject("Port (%P)", "echo %P", groupOther, true, true, true),
+                new CommandObject("Protocol (%T)", "echo %T", groupOther, true, true, true),
+                new CommandObject("URL (%U)", "echo %U", groupOther, true, true, true),
+                new CommandObject("URL-Path (%A)", "echo %A", groupOther, true, true, true),
+                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, true, true, true),
+                new CommandObject("Cookies (%C)", "echo %C", groupOther, true, true, true),
+                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, true, true, true),
+                new CommandObject("Selected text (%S)", "echo %S", groupOther, true, true, true),
+                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, true, true, false),
+                new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, true, true, false),
+                new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, true, true, false),
+                new CommandObject("HTTP-Body as file (%B)", "echo %B && cat %B", groupOther, true, true, false)
         );
     }
 
