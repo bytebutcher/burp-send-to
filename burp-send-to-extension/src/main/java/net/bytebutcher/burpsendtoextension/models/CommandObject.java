@@ -1,13 +1,11 @@
 package net.bytebutcher.burpsendtoextension.models;
 
-import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponseInfoPlaceholder;
 import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponsePlaceholder;
 import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
-import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import java.util.*;
@@ -134,18 +132,6 @@ public class CommandObject {
     }
 
     /**
-     * Returns the given command while all placeholders are replaced with their associated value as ProcessBuilder.
-     * @throws Exception when retrieving/replacing a placeholder failed.
-     */
-    public ProcessBuilder getProcessBuilder(String command) throws Exception {
-        if (shouldRunInTerminal()) {
-            return new ProcessBuilder(formatCommandForRunningInTerminal(command));
-        } else {
-            return new ProcessBuilder(formatCommandForRunningOnOperatingSystem(command));
-        }
-    }
-
-    /**
      * Returns the command while all placeholders are replaced with their associated value as String.
      * @throws Exception when retrieving/replacing a placeholder failed.
      */
@@ -163,27 +149,6 @@ public class CommandObject {
             // (here: placeholderMap.stream()) does not handle checked exceptions well.
             throw new Exception(e);
         }
-    }
-
-    private String[] formatCommandForRunningOnOperatingSystem(String command) {
-        String[] commandToBeExecuted;
-        if (OsUtils.isWindows()) {
-            commandToBeExecuted = new String[]{"cmd", "/c", command};
-        } else {
-            commandToBeExecuted = new String[]{"/bin/bash", "-c", command};
-        }
-        return commandToBeExecuted;
-    }
-
-    private String[] formatCommandForRunningInTerminal(String command) {
-        String[] commandToBeExecuted = BurpExtender.getConfig().getRunInTerminalCommand().split(" ");
-        for (int i = 0; i < commandToBeExecuted.length; i++) {
-            String commandPart = commandToBeExecuted[i];
-            if ("%C".equals(commandPart)) {
-                commandToBeExecuted[i] = command;
-            }
-        }
-        return commandToBeExecuted;
     }
 
 }
