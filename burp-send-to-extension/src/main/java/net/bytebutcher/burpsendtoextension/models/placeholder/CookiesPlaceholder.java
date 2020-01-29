@@ -1,6 +1,5 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder;
 
-import burp.IContextMenuInvocation;
 import burp.ICookie;
 import burp.RequestResponseHolder;
 import com.google.common.collect.Lists;
@@ -12,15 +11,15 @@ import java.util.stream.Collectors;
 
 public class CookiesPlaceholder extends AbstractRequestResponseInfoPlaceholder {
 
-    public CookiesPlaceholder(RequestResponseHolder requestResponseHolder, IContextMenuInvocation iContextMenuInvocation) {
-        super("%C", true, false, requestResponseHolder, iContextMenuInvocation);
+    public CookiesPlaceholder(RequestResponseHolder requestResponseHolder) {
+        super("%C", true, false, requestResponseHolder);
     }
 
     @Nullable
     @Override
     protected String getInternalValue(Context context) {
         List<ICookie> cookies = Lists.newArrayList();
-        switch (context) {
+        switch (context.getOrigin()) {
             case HTTP_REQUEST:
                 cookies = getRequestInfo().getCookies();
                 break;

@@ -1,6 +1,5 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder;
 
-import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
 import net.bytebutcher.burpsendtoextension.models.Context;
 
@@ -8,19 +7,19 @@ import javax.annotation.Nullable;
 
 public class SelectedTextPlaceholder extends AbstractRequestResponsePlaceholder {
 
-    public SelectedTextPlaceholder(RequestResponseHolder requestResponseHolder, IContextMenuInvocation iContextMenuInvocation) {
-        super("%S", true, false, requestResponseHolder, iContextMenuInvocation);
+    public SelectedTextPlaceholder(RequestResponseHolder requestResponseHolder) {
+        super("%S", true, false, requestResponseHolder);
     }
 
-    protected SelectedTextPlaceholder(String placeholder, boolean doShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder, IContextMenuInvocation contextMenuInvocation) {
-        super(placeholder, doShellEscape, doWriteToFile, requestResponseHolder, contextMenuInvocation);
+    protected SelectedTextPlaceholder(String placeholder, boolean doShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
+        super(placeholder, doShellEscape, doWriteToFile, requestResponseHolder);
     }
 
     @Nullable
     @Override
     protected String getInternalValue(Context context) {
         String value = null;
-        int[] selectionBounds = getSelectionBounds();
+        int[] selectionBounds = context.getSelectionBounds();
         if (selectionBounds != null) {
             byte[] requestResponse = getRequestResponseAsByteArray(context);
             if (requestResponse != null) {

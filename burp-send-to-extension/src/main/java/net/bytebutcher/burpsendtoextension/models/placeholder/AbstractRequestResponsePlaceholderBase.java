@@ -1,6 +1,5 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder;
 
-import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
 import net.bytebutcher.burpsendtoextension.models.Context;
 
@@ -15,27 +14,12 @@ public abstract class AbstractRequestResponsePlaceholderBase implements IPlaceho
     private final String placeholder;
     private final boolean doesRequireShellEscape;
     private final boolean doWriteToFile;
-    private final IContextMenuInvocation contextMenuInvocation;
 
-    public AbstractRequestResponsePlaceholderBase(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder, IContextMenuInvocation contextMenuInvocation) {
+    public AbstractRequestResponsePlaceholderBase(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
         this.requestResponseHolder = requestResponseHolder;
         this.placeholder = placeholder;
         this.doesRequireShellEscape = doesRequireShellEscape;
         this.doWriteToFile = doWriteToFile;
-        this.contextMenuInvocation = contextMenuInvocation;
-    }
-
-    /**
-     * NOTE: Access to IContextMenuInvocation is restricted to prevent accessing getSelectedMessage.
-     *       Messages should always be accessed via RequestResponseHolder. Notably using IContextMenuInvocation
-     *       within this class is a minor design issue.
-     */
-    private IContextMenuInvocation getContextMenuInvocation() {
-        return contextMenuInvocation;
-    }
-
-    protected int[] getSelectionBounds() {
-        return this.getContextMenuInvocation().getSelectionBounds();
     }
 
     @Override

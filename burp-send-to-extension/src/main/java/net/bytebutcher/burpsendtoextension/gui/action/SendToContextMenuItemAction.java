@@ -1,7 +1,7 @@
 package net.bytebutcher.burpsendtoextension.gui.action;
 
 import burp.BurpExtender;
-import burp.IContextMenuInvocation;
+import burp.IHttpRequestResponse;
 import net.bytebutcher.burpsendtoextension.gui.SendToPreviewDialog;
 import net.bytebutcher.burpsendtoextension.gui.SendToTableListener;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
@@ -13,6 +13,7 @@ import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
@@ -24,23 +25,39 @@ public class SendToContextMenuItemAction extends AbstractAction {
 
     private final CommandObject commandObject;
     private final List<Map<String, IPlaceholder>> placeholders;
-    private final IContextMenuInvocation invocation;
     private final SendToTableListener sendToTableListener;
     private final Context context;
 
-    public SendToContextMenuItemAction(String title, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, IContextMenuInvocation invocation, SendToTableListener sendToTableListener, Context context) {
+    public SendToContextMenuItemAction(String title, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, SendToTableListener sendToTableListener, Context context) {
         super(title);
         this.commandObject = commandObject;
         this.placeholders = placeholders;
-        this.invocation = invocation;
         this.sendToTableListener = sendToTableListener;
         this.context = context;
     }
     @Override
     public void actionPerformed(ActionEvent e) {
         String result = runCommandObject(commandObject);
-        if (commandObject.shouldOutputReplaceSelection() && result != null) {
-            SelectionUtil.replaceSelectedText(invocation, result);
+        if (result != null && commandObject.shouldOutputReplaceSelection()) {
+            replaceSelectedText(context, result);
+        }
+    }
+
+    private void replaceSelectedText(Context context, String replaceText) {
+        try {
+            if (context.getSelectedMessages() != null && context.getSelectedMessages().length > 0) {
+                IHttpRequestResponse message = context.getSelectedMessages()[0];
+                switch (context.getOrigin()) {
+                    case HTTP_REQUEST:
+                        message.setRequest(SelectionUtil.replaceSelectedText(message.getRequest(), context.getSelectionBounds(), replaceText));
+                        break;
+                    case HTTP_RESPONSE:
+                        message.setResponse(SelectionUtil.replaceSelectedText(message.getResponse(), context.getSelectionBounds(), replaceText));
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            BurpExtender.getCallbacks().printError("Error during replacing selection with output: " + e.toString());
         }
     }
 

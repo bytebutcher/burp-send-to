@@ -1,6 +1,5 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder;
 
-import burp.IContextMenuInvocation;
 import burp.IRequestInfoWrapper;
 import burp.IResponseInfoWrapper;
 import burp.RequestResponseHolder;
@@ -12,8 +11,8 @@ public abstract class AbstractRequestResponseInfoPlaceholder extends AbstractReq
 
     private final RequestResponseHolder requestResponseHolder;
 
-    public AbstractRequestResponseInfoPlaceholder(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder, IContextMenuInvocation contextMenuInvocation) {
-        super(placeholder, doesRequireShellEscape, doWriteToFile, requestResponseHolder, contextMenuInvocation);
+    public AbstractRequestResponseInfoPlaceholder(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
+        super(placeholder, doesRequireShellEscape, doWriteToFile, requestResponseHolder);
         this.requestResponseHolder = requestResponseHolder;
     }
 

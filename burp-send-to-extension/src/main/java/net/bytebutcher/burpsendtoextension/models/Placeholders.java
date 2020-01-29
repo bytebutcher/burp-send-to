@@ -1,7 +1,6 @@
 package net.bytebutcher.burpsendtoextension.models;
 
 import burp.IBurpExtenderCallbacks;
-import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 import burp.RequestResponseHolder;
 import com.google.common.collect.Lists;
@@ -16,25 +15,28 @@ public class Placeholders {
     /**
      * Initializes the placeholders for each selected message and returns them in a list.
      */
-    public static List<Map<String, IPlaceholder>> get(IBurpExtenderCallbacks burpExtenderCallbacks, IContextMenuInvocation invocation) {
+    public static List<Map<String, IPlaceholder>> get(IBurpExtenderCallbacks burpExtenderCallbacks, IHttpRequestResponse[] selectedMessages) {
         List<Map<String, IPlaceholder>> result = Lists.newArrayList();
-        for (IHttpRequestResponse selectedMessage : invocation.getSelectedMessages()) {
+        if (selectedMessages == null) {
+            return result;
+        }
+        for (IHttpRequestResponse selectedMessage : selectedMessages) {
             RequestResponseHolder requestResponseHolder = new RequestResponseHolder(burpExtenderCallbacks, selectedMessage);
             Map<String, IPlaceholder> placeholderMap = Maps.newHashMap();
             List<IPlaceholder> placeholderList = Lists.newArrayList(
-                    new CookiesPlaceholder(requestResponseHolder, invocation),
-                    new HostPlaceholder(requestResponseHolder, invocation),
-                    new HttpBodyToFilePlaceholder(requestResponseHolder, invocation),
-                    new HttpHeadersToFilePlaceholder(requestResponseHolder, invocation),
-                    new HttpMethodPlaceholder(requestResponseHolder, invocation),
-                    new HttpRequestResponsePlaceholder(requestResponseHolder, invocation),
-                    new PortPlaceholder(requestResponseHolder, invocation),
-                    new ProtocolPlaceholder(requestResponseHolder, invocation),
-                    new SelectedTextPlaceholder(requestResponseHolder, invocation),
-                    new SelectedTextToFilePlaceholder(requestResponseHolder, invocation),
-                    new UrlPathPlaceholder(requestResponseHolder, invocation),
-                    new UrlPlaceholder(requestResponseHolder, invocation),
-                    new UrlQueryPlaceholder(requestResponseHolder, invocation));
+                    new CookiesPlaceholder(requestResponseHolder),
+                    new HostPlaceholder(requestResponseHolder),
+                    new HttpBodyToFilePlaceholder(requestResponseHolder),
+                    new HttpHeadersToFilePlaceholder(requestResponseHolder),
+                    new HttpMethodPlaceholder(requestResponseHolder),
+                    new HttpRequestResponsePlaceholder(requestResponseHolder),
+                    new PortPlaceholder(requestResponseHolder),
+                    new ProtocolPlaceholder(requestResponseHolder),
+                    new SelectedTextPlaceholder(requestResponseHolder),
+                    new SelectedTextToFilePlaceholder(requestResponseHolder),
+                    new UrlPathPlaceholder(requestResponseHolder),
+                    new UrlPlaceholder(requestResponseHolder),
+                    new UrlQueryPlaceholder(requestResponseHolder));
             for (IPlaceholder placeholder : placeholderList) {
                 placeholderMap.put(placeholder.getPlaceholder(), placeholder);
             }

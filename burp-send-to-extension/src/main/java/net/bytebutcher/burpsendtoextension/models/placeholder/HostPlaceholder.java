@@ -1,6 +1,5 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder;
 
-import burp.IContextMenuInvocation;
 import burp.RequestResponseHolder;
 import net.bytebutcher.burpsendtoextension.models.Context;
 
@@ -8,8 +7,8 @@ import javax.annotation.Nullable;
 
 public class HostPlaceholder extends AbstractRequestPlaceholder {
 
-    public HostPlaceholder(RequestResponseHolder requestResponseHolder,IContextMenuInvocation iContextMenuInvocation) {
-        super("%H", true, false, requestResponseHolder, iContextMenuInvocation);
+    public HostPlaceholder(RequestResponseHolder requestResponseHolder) {
+        super("%H", true, false, requestResponseHolder);
     }
 
     @Nullable

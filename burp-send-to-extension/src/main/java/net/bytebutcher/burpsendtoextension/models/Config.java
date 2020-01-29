@@ -14,7 +14,7 @@ public class Config {
 
     private final IBurpExtenderCallbacks callbacks;
     private BurpExtender burpExtender;
-    private String version = "1.1";
+    private String version = "1.2";
 
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;

@@ -27,7 +27,7 @@ public class SendToContextMenu implements IContextMenuFactory {
 
     @Override
     public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
-        List<Map<String, IPlaceholder>> placeholders = Placeholders.get(BurpExtender.getCallbacks(), invocation);
+        List<Map<String, IPlaceholder>> placeholders = Placeholders.get(BurpExtender.getCallbacks(), invocation.getSelectedMessages());
         List<CommandObject> commandObjects = BurpExtender.getConfig().getSendToTableData();
         if (commandObjects.isEmpty()) {
             return Lists.newArrayList();
@@ -64,15 +64,16 @@ public class SendToContextMenu implements IContextMenuFactory {
     private void addMenuItem(JMenu menu, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, IContextMenuInvocation invocation) {
 
         JMenuItem item;
-        if (commandObject.doesRequireRequestResponse(placeholders.get(0)) && Context.getContext(invocation) == Context.UNKNOWN) {
+        Context context = new Context(invocation);
+        if (commandObject.doesRequireRequestResponse(placeholders.get(0)) && context.getOrigin() == Context.Origin.UNKNOWN) {
             item = new JMenu(commandObject.getName());
-            SendToContextMenuItem request = new SendToContextMenuItem("request", commandObject, placeholders, invocation, Context.HTTP_REQUEST, sendToTableListener);
-            SendToContextMenuItem response = new SendToContextMenuItem("response", commandObject, placeholders, invocation, Context.HTTP_RESPONSE, sendToTableListener);
+            SendToContextMenuItem request = new SendToContextMenuItem("request", commandObject, placeholders, new Context(Context.Origin.HTTP_REQUEST, invocation), sendToTableListener);
+            SendToContextMenuItem response = new SendToContextMenuItem("response", commandObject, placeholders, new Context(Context.Origin.HTTP_RESPONSE, invocation), sendToTableListener);
             item.add(request);
             item.add(response);
             item.setEnabled(request.isEnabled() || response.isEnabled());
         } else {
-            item = new SendToContextMenuItem(commandObject.getName(), commandObject, placeholders, invocation, Context.getContext(invocation), sendToTableListener);
+            item = new SendToContextMenuItem(commandObject.getName(), commandObject, placeholders, context, sendToTableListener);
         }
         menu.add(item);
     }
