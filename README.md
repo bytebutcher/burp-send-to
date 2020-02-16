@@ -58,6 +58,7 @@ Executing commands based on untrusted input always introduces the risk of comman
 This project was built using IntelliJ and Gradle. When you make changes to the source (and especially the GUI) you should apply following settings within Intellij to make sure that everything builds successfully:
 * File -> Settings -> Editor -> GUI Designer -> Generate GUI into: Java source
 * File -> Settings -> Build, Execution, Deployment -> Compiler -> Build project automatically
+* File -> Settings -> Build, Execution, Deployment -> Build Tools -> Gradle -> Build and run using: IntelliJ IDEA
 
 When the GUI is not updated correctly you may rebuild the project manually:
 * Build -> Rebuild Project
