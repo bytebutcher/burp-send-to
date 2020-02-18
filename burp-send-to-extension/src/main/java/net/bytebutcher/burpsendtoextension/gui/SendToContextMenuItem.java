@@ -3,7 +3,7 @@ package net.bytebutcher.burpsendtoextension.gui;
 import net.bytebutcher.burpsendtoextension.gui.action.SendToContextMenuItemAction;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.Context;
-import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholderParser;
 
 import javax.swing.*;
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.Map;
 
 public class SendToContextMenuItem extends JMenuItem {
 
-    public SendToContextMenuItem(String title, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, Context context, SendToTableListener sendToTableListener) {
+    public SendToContextMenuItem(String title, CommandObject commandObject, List<Map<String, IPlaceholderParser>> placeholders, Context context, SendToTableListener sendToTableListener) {
         String text = "";
-        List<Map<String, IPlaceholder>> validEntries = commandObject.getValid(placeholders, context);
+        List<Map<String, IPlaceholderParser>> validEntries = commandObject.getValid(placeholders, context);
         if (placeholders.size() > 1) {
             text = title + " (" + validEntries.size() + "/" + placeholders.size() + ")";
         } else {

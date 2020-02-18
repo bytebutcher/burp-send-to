@@ -5,31 +5,35 @@ import net.bytebutcher.burpsendtoextension.models.Context;
 
 import javax.annotation.Nullable;
 
-public class SelectedTextPlaceholder extends AbstractRequestResponsePlaceholder {
+public class SelectedTextPlaceholder extends AbstractPlaceholder {
 
-    public SelectedTextPlaceholder(RequestResponseHolder requestResponseHolder) {
-        super("%S", true, false, requestResponseHolder);
+    public SelectedTextPlaceholder() {
+        super("%S", true, false);
     }
 
-    protected SelectedTextPlaceholder(String placeholder, boolean doShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
-        super(placeholder, doShellEscape, doWriteToFile, requestResponseHolder);
+    protected SelectedTextPlaceholder(String placeholder, boolean doShellEscape, boolean doWriteToFile) {
+        super(placeholder, doShellEscape, doWriteToFile);
     }
 
-    @Nullable
     @Override
-    protected String getInternalValue(Context context) {
-        String value = null;
-        int[] selectionBounds = context.getSelectionBounds();
-        if (selectionBounds != null) {
-            byte[] requestResponse = getRequestResponseAsByteArray(context);
-            if (requestResponse != null) {
-                boolean isSelectionEmpty = selectionBounds[0] == selectionBounds[1];
-                if (!isSelectionEmpty) {
-                    value = new String(requestResponse).substring(selectionBounds[0], selectionBounds[1]);
+    public IPlaceholderParser createParser(RequestResponseHolder requestResponseHolder) {
+        return new AbstractRequestResponsePlaceholder(this, requestResponseHolder) {
+            @Nullable
+            @Override
+            protected String getInternalValue(Context context) {
+                String value = null;
+                int[] selectionBounds = context.getSelectionBounds();
+                if (selectionBounds != null) {
+                    byte[] requestResponse = getRequestResponseAsByteArray(context);
+                    if (requestResponse != null) {
+                        boolean isSelectionEmpty = selectionBounds[0] == selectionBounds[1];
+                        if (!isSelectionEmpty) {
+                            value = new String(requestResponse).substring(selectionBounds[0], selectionBounds[1]);
+                        }
+                    }
                 }
+                return value;
             }
-        }
-        return value;
+        };
     }
-
 }

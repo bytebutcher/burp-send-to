@@ -5,17 +5,21 @@ import net.bytebutcher.burpsendtoextension.models.Context;
 
 import javax.annotation.Nullable;
 
-public class HttpRequestResponsePlaceholder extends AbstractRequestResponsePlaceholder {
+public class HttpRequestResponsePlaceholder extends AbstractPlaceholder {
 
-    public HttpRequestResponsePlaceholder(RequestResponseHolder requestResponseHolder) {
-        super("%R", false, true, requestResponseHolder);
+    public HttpRequestResponsePlaceholder() {
+        super("%R", false, true);
     }
 
-    @Nullable
     @Override
-    protected String getInternalValue(Context context) {
-        byte[] requestResponse = getRequestResponseAsByteArray(context);
-        return requestResponse != null ? new String(requestResponse) : null;
+    public IPlaceholderParser createParser(RequestResponseHolder requestResponseHolder) {
+        return new AbstractRequestResponsePlaceholder(this, requestResponseHolder) {
+            @Nullable
+            @Override
+            protected String getInternalValue(Context context) {
+                byte[] requestResponse = getRequestResponseAsByteArray(context);
+                return requestResponse != null ? new String(requestResponse) : null;
+            }
+        };
     }
-
 }

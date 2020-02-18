@@ -7,8 +7,8 @@ public abstract class AbstractRequestPlaceholder extends AbstractRequestResponse
 
     private final RequestResponseHolder requestResponseHolder;
 
-    public AbstractRequestPlaceholder(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
-        super(placeholder, doesRequireShellEscape, doWriteToFile, requestResponseHolder);
+    public AbstractRequestPlaceholder(IPlaceholder placeholder, RequestResponseHolder requestResponseHolder) {
+        super(placeholder, requestResponseHolder);
         this.requestResponseHolder = requestResponseHolder;
     }
 

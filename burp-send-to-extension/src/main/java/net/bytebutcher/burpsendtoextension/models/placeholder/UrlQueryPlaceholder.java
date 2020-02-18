@@ -7,16 +7,20 @@ import javax.annotation.Nullable;
 import java.net.URL;
 import java.util.Optional;
 
-public class UrlQueryPlaceholder extends AbstractRequestInfoPlaceholder {
+public class UrlQueryPlaceholder extends AbstractPlaceholder {
 
-    public UrlQueryPlaceholder(RequestResponseHolder requestResponseHolder) {
-        super("%Q", true, false, requestResponseHolder);
+    public UrlQueryPlaceholder() {
+        super("%Q", true, false);
     }
 
-    @Nullable
     @Override
-    protected String getInternalValue(Context context) {
-        return Optional.ofNullable(getRequestInfo().getUrl()).map(URL::getQuery).orElse(null);
+    public IPlaceholderParser createParser(RequestResponseHolder requestResponseHolder) {
+        return new AbstractRequestInfoPlaceholder(this, requestResponseHolder) {
+            @Nullable
+            @Override
+            protected String getInternalValue(Context context) {
+                return Optional.ofNullable(getRequestInfo().getUrl()).map(URL::getQuery).orElse(null);
+            }
+        };
     }
-
 }

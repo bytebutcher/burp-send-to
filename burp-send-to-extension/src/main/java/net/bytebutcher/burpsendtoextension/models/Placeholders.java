@@ -11,36 +11,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Placeholders {
+
+    public static List<AbstractPlaceholder> get() {
+        return Lists.newArrayList(
+                new CookiesPlaceholder(),
+                new HostPlaceholder(),
+                new HttpBodyToFilePlaceholder(),
+                new HttpHeadersToFilePlaceholder(),
+                new HttpMethodPlaceholder(),
+                new HttpRequestResponsePlaceholder(),
+                new PortPlaceholder(),
+                new ProtocolPlaceholder(),
+                new SelectedTextPlaceholder(),
+                new SelectedTextToFilePlaceholder(),
+                new UrlPathPlaceholder(),
+                new UrlPlaceholder(),
+                new UrlQueryPlaceholder());
+    }
 
     /**
      * Initializes the placeholders for each selected message and returns them in a list.
      */
-    public static List<Map<String, IPlaceholder>> get(IBurpExtenderCallbacks burpExtenderCallbacks, IHttpRequestResponse[] selectedMessages) {
-        List<Map<String, IPlaceholder>> result = Lists.newArrayList();
+    public static List<Map<String, IPlaceholderParser>> get(IBurpExtenderCallbacks burpExtenderCallbacks, IHttpRequestResponse[] selectedMessages) {
+        List<Map<String, IPlaceholderParser>> result = Lists.newArrayList();
         if (selectedMessages == null) {
             return result;
         }
+        List<AbstractPlaceholder> placeholderList = Placeholders.get();
         for (IHttpRequestResponse selectedMessage : selectedMessages) {
             RequestResponseHolder requestResponseHolder = new RequestResponseHolder(burpExtenderCallbacks, selectedMessage);
-            Map<String, IPlaceholder> placeholderMap = Maps.newHashMap();
-            List<IPlaceholder> placeholderList = Lists.newArrayList(
-                    new CookiesPlaceholder(requestResponseHolder),
-                    new HostPlaceholder(requestResponseHolder),
-                    new HttpBodyToFilePlaceholder(requestResponseHolder),
-                    new HttpHeadersToFilePlaceholder(requestResponseHolder),
-                    new HttpMethodPlaceholder(requestResponseHolder),
-                    new HttpRequestResponsePlaceholder(requestResponseHolder),
-                    new PortPlaceholder(requestResponseHolder),
-                    new ProtocolPlaceholder(requestResponseHolder),
-                    new SelectedTextPlaceholder(requestResponseHolder),
-                    new SelectedTextToFilePlaceholder(requestResponseHolder),
-                    new UrlPathPlaceholder(requestResponseHolder),
-                    new UrlPlaceholder(requestResponseHolder),
-                    new UrlQueryPlaceholder(requestResponseHolder));
-            for (IPlaceholder placeholder : placeholderList) {
-                placeholderMap.put(placeholder.getPlaceholder(), placeholder);
+            Map<String, IPlaceholderParser> placeholderMap = Maps.newHashMap();
+            for (AbstractPlaceholder placeholder : placeholderList) {
+                placeholderMap.put(placeholder.getPlaceholder(), placeholder.createParser(requestResponseHolder));
             }
             result.add(placeholderMap);
         }
@@ -48,13 +53,17 @@ public class Placeholders {
     }
 
     public static List<String> get(String format) {
-        List<String> placeHolders = Lists.newArrayList();
+        List<String> validPlaceholders = Placeholders.get().stream().map(AbstractPlaceholder::getPlaceholder).collect(Collectors.toList());
+        List<String> placeholders = Lists.newArrayList();
         if (format != null && !format.isEmpty()) {
             Matcher m = Pattern.compile("(\\%[A-Z])").matcher(format);
             while (m.find()) {
-                placeHolders.add(m.group(1));
+                String placeholder = m.group(1);
+                if (validPlaceholders.contains(placeholder)) {
+                    placeholders.add(placeholder);
+                }
             }
         }
-        return placeHolders;
+        return placeholders;
     }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponseInfoPlaceholder;
 import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponsePlaceholder;
-import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholderParser;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.CommandSeparatedPlaceholderBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.StringSeparatedPlaceholderBehaviour;
@@ -118,9 +118,9 @@ public class CommandObject {
         return Objects.hash(id);
     }
 
-    public List<Map<String, IPlaceholder>> getValid(List<Map<String, IPlaceholder>> placeholders, Context context) {
-        List<Map<String, IPlaceholder>> validItems = Lists.newArrayList();
-        for (Map<String, IPlaceholder> placeholderMap : placeholders) {
+    public List<Map<String, IPlaceholderParser>> getValid(List<Map<String, IPlaceholderParser>> placeholders, Context context) {
+        List<Map<String, IPlaceholderParser>> validItems = Lists.newArrayList();
+        for (Map<String, IPlaceholderParser> placeholderMap : placeholders) {
             if (isValid(placeholderMap, context)) {
                 validItems.add(placeholderMap);
             }
@@ -128,7 +128,7 @@ public class CommandObject {
         return validItems;
     }
 
-    private boolean isValid(Map<String, IPlaceholder> placeholderMap, Context context) {
+    private boolean isValid(Map<String, IPlaceholderParser> placeholderMap, Context context) {
         for (String placeholder : getPlaceholders(getPlaceholderBehaviourList())) {
             if (placeholderMap.containsKey(placeholder)) {
                 if (!placeholderMap.get(placeholder).isValid(context)) {
@@ -139,7 +139,7 @@ public class CommandObject {
         return true;
     }
 
-    public boolean doesRequireRequestResponse(Map<String, IPlaceholder> placeholderMap) {
+    public boolean doesRequireRequestResponse(Map<String, IPlaceholderParser> placeholderMap) {
         for (String placeholder : getPlaceholders(getPlaceholderBehaviourList())) {
             if (placeholderMap.containsKey(placeholder)) {
                 if (placeholderMap.get(placeholder) instanceof AbstractRequestResponseInfoPlaceholder || placeholderMap.get(placeholder) instanceof AbstractRequestResponsePlaceholder) {
@@ -158,7 +158,7 @@ public class CommandObject {
      * Returns the command while all placeholders are replaced with their associated value as String.
      * @throws Exception when retrieving/replacing a placeholder failed.
      */
-    public String getCommand(List<Map<String, IPlaceholder>> placeholderMap, Context context) throws Exception {
+    public String getCommand(List<Map<String, IPlaceholderParser>> placeholderMap, Context context) throws Exception {
         try {
             List<String> result = Lists.newArrayList();
             boolean containsCommandSeparatedPlaceholderBehaviour = getPlaceholderBehaviourList().stream().anyMatch(c -> c instanceof CommandSeparatedPlaceholderBehaviour);
@@ -190,7 +190,7 @@ public class CommandObject {
         }
     }
 
-    private String replaceCommandPlaceholder(String internalPlaceHolder, List<Map<String, IPlaceholder>> placeholderMap, int messageIndex, int placeholderIndex, String command, Context context) {
+    private String replaceCommandPlaceholder(String internalPlaceHolder, List<Map<String, IPlaceholderParser>> placeholderMap, int messageIndex, int placeholderIndex, String command, Context context) {
         boolean isCommandSeparated = getPlaceholderBehaviourList().get(placeholderIndex) instanceof CommandSeparatedPlaceholderBehaviour;
         String value = null;
         if (isCommandSeparated) {

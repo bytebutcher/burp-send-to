@@ -7,7 +7,7 @@ import net.bytebutcher.burpsendtoextension.gui.SendToTableListener;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.Context;
-import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholderParser;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,11 +19,11 @@ import java.util.Map;
 public class SendToContextMenuItemAction extends AbstractAction {
 
     private final CommandObject commandObject;
-    private final List<Map<String, IPlaceholder>> placeholders;
+    private final List<Map<String, IPlaceholderParser>> placeholders;
     private final SendToTableListener sendToTableListener;
     private final Context context;
 
-    public SendToContextMenuItemAction(String title, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, SendToTableListener sendToTableListener, Context context) {
+    public SendToContextMenuItemAction(String title, CommandObject commandObject, List<Map<String, IPlaceholderParser>> placeholders, SendToTableListener sendToTableListener, Context context) {
         super(title);
         this.commandObject = commandObject;
         this.placeholders = placeholders;

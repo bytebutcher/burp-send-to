@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.Context;
 import net.bytebutcher.burpsendtoextension.models.Placeholders;
-import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholder;
+import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholderParser;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class SendToContextMenu implements IContextMenuFactory {
 
     @Override
     public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
-        List<Map<String, IPlaceholder>> placeholders = Placeholders.get(BurpExtender.getCallbacks(), invocation.getSelectedMessages());
+        List<Map<String, IPlaceholderParser>> placeholders = Placeholders.get(BurpExtender.getCallbacks(), invocation.getSelectedMessages());
         List<CommandObject> commandObjects = BurpExtender.getConfig().getSendToTableData();
         if (commandObjects.isEmpty()) {
             return Lists.newArrayList();
@@ -61,7 +61,7 @@ public class SendToContextMenu implements IContextMenuFactory {
         return  Lists.newArrayList(sendToMenu);
     }
 
-    private void addMenuItem(JMenu menu, CommandObject commandObject, List<Map<String, IPlaceholder>> placeholders, IContextMenuInvocation invocation) {
+    private void addMenuItem(JMenu menu, CommandObject commandObject, List<Map<String, IPlaceholderParser>> placeholders, IContextMenuInvocation invocation) {
 
         JMenuItem item;
         Context context = new Context(invocation);

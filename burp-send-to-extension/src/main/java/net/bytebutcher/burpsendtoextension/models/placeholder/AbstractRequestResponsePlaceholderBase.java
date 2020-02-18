@@ -8,24 +8,25 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Optional;
 
-public abstract class AbstractRequestResponsePlaceholderBase implements IPlaceholder {
+public abstract class AbstractRequestResponsePlaceholderBase implements IPlaceholderParser {
 
+    private final IPlaceholder placeholder;
     private final RequestResponseHolder requestResponseHolder;
-    private final String placeholder;
-    private final boolean doesRequireShellEscape;
-    private final boolean doWriteToFile;
 
-    public AbstractRequestResponsePlaceholderBase(String placeholder, boolean doesRequireShellEscape, boolean doWriteToFile, RequestResponseHolder requestResponseHolder) {
-        this.requestResponseHolder = requestResponseHolder;
+    public AbstractRequestResponsePlaceholderBase(IPlaceholder placeholder, RequestResponseHolder requestResponseHolder) {
         this.placeholder = placeholder;
-        this.doesRequireShellEscape = doesRequireShellEscape;
-        this.doWriteToFile = doWriteToFile;
+        this.requestResponseHolder = requestResponseHolder;
     }
 
-    @Override
     public String getPlaceholder() {
-        return placeholder;
+        return placeholder.getPlaceholder();
     }
+
+    public boolean doesRequireShellEscape() {
+        return placeholder.doesRequireShellEscape();
+    }
+
+    public boolean shouldWriteToFile() { return placeholder.shouldWriteToFile(); }
 
     /**
      * Returns the value associated with the placeholder.
@@ -35,18 +36,11 @@ public abstract class AbstractRequestResponsePlaceholderBase implements IPlaceho
     @Nullable
     protected abstract String getInternalValue(Context context) throws Exception;
 
-    /**
-     * Returns whether the placeholder requires shell-escaping.
-     */
-    public boolean doesRequireShellEscape() {
-        return doesRequireShellEscape;
-    }
-
     @Override
     public String getValue(Context context) throws RuntimeException {
         try {
             String value = Optional.ofNullable(getInternalValue(context)).orElse("");
-            if (doWriteToFile) {
+            if (placeholder.shouldWriteToFile()) {
                 value = writeToFile(value);
             }
             return value;
@@ -55,7 +49,7 @@ public abstract class AbstractRequestResponsePlaceholderBase implements IPlaceho
             // no url-query-parameter present, etc.). This is done in favor of returning empty text.
             // In practice this exception should not be thrown anyway since menu items which contain this placeholder
             // are disabled and can not be selected anyway (see isValid()).
-            throw new RuntimeException("Error replacing placeholder " + getPlaceholder() + " !", e);
+            throw new RuntimeException("Error replacing placeholder " + placeholder.getPlaceholder() + " !", e);
         }
     }
 
