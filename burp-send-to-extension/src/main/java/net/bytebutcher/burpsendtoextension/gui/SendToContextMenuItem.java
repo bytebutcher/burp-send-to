@@ -20,7 +20,13 @@ public class SendToContextMenuItem extends JMenuItem {
             text = title;
         }
         this.setAction(new SendToContextMenuItemAction(text, commandObject, placeholders, sendToTableListener, context));
-        this.setEnabled(validEntries.size() > 0);
+        if (commandObject.shouldOutputReplaceSelection() && context.getSelectionBounds() == null) {
+            // Always disable context menu item, when command should replace selection but no selection was made.
+            this.setEnabled(false);
+        } else {
+            // Do only enable context menu item, when at least one HTTP-message can be used to construct the command.
+            this.setEnabled(validEntries.size() > 0);
+        }
     }
 
 }

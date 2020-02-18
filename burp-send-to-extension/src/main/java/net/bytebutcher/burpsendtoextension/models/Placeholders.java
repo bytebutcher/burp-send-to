@@ -9,6 +9,8 @@ import net.bytebutcher.burpsendtoextension.models.placeholder.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Placeholders {
 
@@ -43,5 +45,16 @@ public class Placeholders {
             result.add(placeholderMap);
         }
         return result;
+    }
+
+    public static List<String> get(String format) {
+        List<String> placeHolders = Lists.newArrayList();
+        if (format != null && !format.isEmpty()) {
+            Matcher m = Pattern.compile("(\\%[A-Z])").matcher(format);
+            while (m.find()) {
+                placeHolders.add(m.group(1));
+            }
+        }
+        return placeHolders;
     }
 }

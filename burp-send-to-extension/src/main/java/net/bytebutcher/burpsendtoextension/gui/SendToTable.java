@@ -1,8 +1,10 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.BurpExtender;
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -21,7 +23,8 @@ public class SendToTable extends JTable {
         GROUP(3),
         RUN_IN_TERMINAL(4),
         OUTPUT_REPLACE_SELECTION(5),
-        SHOW_PREVIEW(6);
+        SHOW_PREVIEW(6),
+        PLACEHOLDER_BEHAVIOUR(7);
 
         private final int index;
 
@@ -50,8 +53,9 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Run in terminal");
         this.defaultModel.addColumn("Output should replace selection");
         this.defaultModel.addColumn("Show preview");
+        this.defaultModel.addColumn("Placeholder behaviour");
         setModel(this.defaultModel);
-        hideColumns(Column.ID, Column.COMMAND);
+        hideColumns(Column.ID, Column.COMMAND, Column.PLACEHOLDER_BEHAVIOUR);
     }
 
     private void hideColumns(Column ... c) {
@@ -107,6 +111,15 @@ public class SendToTable extends JTable {
         return Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.COMMAND.getIndex())).orElse("").toString();
     }
 
+    private List<PlaceholderBehaviour> getPlaceholderBehaviourByRowIndex(int rowIndex) {
+        try {
+            return (List<PlaceholderBehaviour>) this.getModel().getValueAt(rowIndex, Column.PLACEHOLDER_BEHAVIOUR.getIndex());
+        } catch (Exception e) {
+            BurpExtender.printErr("Casting of placeholder behaviour failed for row " + rowIndex);
+            return Lists.newArrayList();
+        }
+    }
+
     public List<CommandObject> getCommandObjects() {
         List<CommandObject> commandObjects = new ArrayList<CommandObject>();
         for (int i = 0; i < this.getDefaultModel().getRowCount(); i++) {
@@ -123,7 +136,8 @@ public class SendToTable extends JTable {
         boolean runInTerminal = getRunInTerminalByRowIndex(rowIndex);
         boolean showPreview = getShowPreviewByRowIndex(rowIndex);
         boolean outputReplaceSelection = getOutputReplaceSelectionByRowIndex(rowIndex);
-        return new CommandObject(id, name, command, group, runInTerminal, showPreview, outputReplaceSelection);
+        List<PlaceholderBehaviour> placeholderBehaviourList = getPlaceholderBehaviourByRowIndex(rowIndex);
+        return new CommandObject(id, name, command, group, runInTerminal, showPreview, outputReplaceSelection, placeholderBehaviourList);
     }
 
     public CommandObject getCommandObjectById(String commandId) {
@@ -155,7 +169,8 @@ public class SendToTable extends JTable {
                 commandObject.getGroup(),
                 commandObject.shouldRunInTerminal(),
                 commandObject.shouldOutputReplaceSelection(),
-                commandObject.shouldShowPreview()
+                commandObject.shouldShowPreview(),
+                commandObject.getPlaceholderBehaviourList()
         });
     }
 
@@ -175,6 +190,7 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.shouldRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
         model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
+        model.setValueAt(commandObject.getPlaceholderBehaviourList(), rowIndex, Column.PLACEHOLDER_BEHAVIOUR.getIndex());
     }
 
     public void editCommandObject(CommandObject commandObject) {

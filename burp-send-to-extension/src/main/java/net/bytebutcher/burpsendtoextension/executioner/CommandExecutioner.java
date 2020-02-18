@@ -2,6 +2,7 @@ package net.bytebutcher.burpsendtoextension.executioner;
 
 import burp.BurpExtender;
 import burp.IHttpRequestResponse;
+import com.google.common.collect.Lists;
 import net.bytebutcher.burpsendtoextension.gui.util.SelectionUtil;
 import net.bytebutcher.burpsendtoextension.models.Context;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
@@ -9,6 +10,8 @@ import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandExecutioner {
 
@@ -26,11 +29,17 @@ public class CommandExecutioner {
 
     public void execute() throws Exception {
         if (command != null) {
-            ProcessBuilder commandProcessBuilder = getProcessBuilder(command);
-            logCommandToBeExecuted(commandProcessBuilder.command().toArray(new String[commandProcessBuilder.command().size()]));
-            Process process = commandProcessBuilder.start();
-            if (shouldOutputReplaceSelection) {
-                replaceSelectedText(context, StringUtils.fromInputStream(process.getInputStream()));
+            List<String> commandOutput = Lists.newArrayList();
+            for (String c : command.split("\n")) {
+                ProcessBuilder commandProcessBuilder = getProcessBuilder(c);
+                logCommandToBeExecuted(commandProcessBuilder.command().toArray(new String[commandProcessBuilder.command().size()]));
+                Process process = commandProcessBuilder.start();
+                if (shouldOutputReplaceSelection) {
+                    commandOutput.add(StringUtils.fromInputStream(process.getInputStream()));
+                }
+            }
+            if (!commandOutput.isEmpty()) {
+                replaceSelectedText(context, commandOutput.stream().collect(Collectors.joining("\n")));
             }
         }
     }
