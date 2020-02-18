@@ -29,6 +29,12 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 * **Show preview:** gives you the chance to preview and change the command before executing it.
 * **Output should replace selection:** will replace the selection with the output of the to be executed command.
 
+In addition it is possible to customize how placeholders behave when multiple HTTP messages are selected by clicking the "Advanced"-button. 
+By default each selected HTTP message forms a separate command. However, it is also possible to join all values of a specific placeholder using a custom separator.
+
+![Burp-Send-To-Extension Add-/Edit-Dialog](images/burp-send-to-extension-add-edit-dialog.png)
+![Burp-Send-To-Extension Advanced-Dialog](images/burp-send-to-extension-advanced-dialog.png)
+
 After creating new context-menu-entries using the "Add"-button they can be edited or deleted again using the "Edit"- and "Remove"-button. In addition the order in which they appear in the context-menu can be altered using the "Up"- and "Down"-button.
 
 ![Burp-Send-To-Extension Tab](images/burp-send-to-extension-tab.png)
