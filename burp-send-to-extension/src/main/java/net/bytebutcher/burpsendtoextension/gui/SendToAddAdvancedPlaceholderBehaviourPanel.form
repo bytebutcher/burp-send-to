@@ -22,8 +22,8 @@
         </constraints>
         <properties>
           <model>
-            <item value="separated by string"/>
             <item value="split into separate commands"/>
+            <item value="separated by string"/>
           </model>
         </properties>
       </component>

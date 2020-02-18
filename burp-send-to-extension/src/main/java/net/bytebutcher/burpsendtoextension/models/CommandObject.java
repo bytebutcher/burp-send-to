@@ -65,7 +65,7 @@ public class CommandObject {
                     }
                 }
             } else {
-                result.add(new StringSeparatedPlaceholderBehaviour(placeholder, ",")); // Default separator
+                result.add(new CommandSeparatedPlaceholderBehaviour(placeholder)); // Default separator
             }
         }
         return result;

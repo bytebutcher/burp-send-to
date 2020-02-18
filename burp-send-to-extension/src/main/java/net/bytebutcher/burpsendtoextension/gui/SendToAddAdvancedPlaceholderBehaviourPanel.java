@@ -30,17 +30,17 @@ public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
         initEventListener();
     }
 
-    private void initFields(StringSeparatedPlaceholderBehaviour placeholderBehaviour) {
-        this.lblPlaceholder.setText(placeholderBehaviour.getPlaceholder());
-        this.txtSeparator.setText(placeholderBehaviour.getSeparator());
-        this.txtSeparator.setEnabled(true);
-        this.cmbSeperator.setSelectedIndex(0);
-    }
-
     private void initFields(CommandSeparatedPlaceholderBehaviour placeholderBehaviour) {
         this.lblPlaceholder.setText(placeholderBehaviour.getPlaceholder());
         this.txtSeparator.setText("");
         this.txtSeparator.setEnabled(false);
+        this.cmbSeperator.setSelectedIndex(0);
+    }
+
+    private void initFields(StringSeparatedPlaceholderBehaviour placeholderBehaviour) {
+        this.lblPlaceholder.setText(placeholderBehaviour.getPlaceholder());
+        this.txtSeparator.setText(placeholderBehaviour.getSeparator());
+        this.txtSeparator.setEnabled(true);
         this.cmbSeperator.setSelectedIndex(1);
     }
 
@@ -48,10 +48,10 @@ public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
         this.cmbSeperator.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (cmbSeperator.getSelectedIndex() == 0) {
-                    txtSeparator.setEnabled(true);
+                    txtSeparator.setEnabled(false);
                     txtSeparator.setText("");
                 } else {
-                    txtSeparator.setEnabled(false);
+                    txtSeparator.setEnabled(true);
                     txtSeparator.setText("");
                 }
             }
@@ -60,9 +60,9 @@ public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
 
     public PlaceholderBehaviour getPlaceholderBehaviour() {
         if (cmbSeperator.getSelectedIndex() == 0) {
-            return new StringSeparatedPlaceholderBehaviour(lblPlaceholder.getText(), txtSeparator.getText());
-        } else {
             return new CommandSeparatedPlaceholderBehaviour(lblPlaceholder.getText());
+        } else {
+            return new StringSeparatedPlaceholderBehaviour(lblPlaceholder.getText(), txtSeparator.getText());
         }
     }
 
@@ -87,8 +87,8 @@ public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
         pnlMain.add(txtSeparator, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         cmbSeperator = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("separated by string");
         defaultComboBoxModel1.addElement("split into separate commands");
+        defaultComboBoxModel1.addElement("separated by string");
         cmbSeperator.setModel(defaultComboBoxModel1);
         pnlMain.add(cmbSeperator, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         lblPlaceholder = new JLabel();
