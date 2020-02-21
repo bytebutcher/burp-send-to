@@ -49,10 +49,12 @@ The "Terminal Options" allow to configure the graphical terminal to use. In addi
 The "Send to..." context-menu contains all entries which were added in the "Send to"-Tab.
 In addition you can add new entries via the "Custom command..."-context-menu-entry.
 
-**Request Field**
+#### Request Field
+
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
 
-**Proxy History**
+####Proxy History
+
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
 
 ## Save and load options
