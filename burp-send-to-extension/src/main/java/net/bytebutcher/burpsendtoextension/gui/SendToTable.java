@@ -4,6 +4,7 @@ import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.ERuntimeBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 
 import javax.swing.*;
@@ -21,10 +22,9 @@ public class SendToTable extends JTable {
         NAME(1),
         COMMAND(2),
         GROUP(3),
-        RUN_IN_TERMINAL(4),
-        OUTPUT_REPLACE_SELECTION(5),
-        SHOW_PREVIEW(6),
-        PLACEHOLDER_BEHAVIOUR(7);
+        RUNTIME_BEHAVIOUR(4),
+        SHOW_PREVIEW(5),
+        PLACEHOLDER_BEHAVIOUR(6);
 
         private final int index;
 
@@ -50,8 +50,7 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Name");
         this.defaultModel.addColumn("Command");
         this.defaultModel.addColumn("Group name");
-        this.defaultModel.addColumn("Run in terminal");
-        this.defaultModel.addColumn("Output should replace selection");
+        this.defaultModel.addColumn("Runtime behaviour");
         this.defaultModel.addColumn("Show preview");
         this.defaultModel.addColumn("Placeholder behaviour");
         setModel(this.defaultModel);
@@ -95,12 +94,8 @@ public class SendToTable extends JTable {
         return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.SHOW_PREVIEW.getIndex())).orElse("").toString());
     }
 
-    private boolean getRunInTerminalByRowIndex(int rowIndex) {
-        return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.RUN_IN_TERMINAL.getIndex())).orElse("").toString());
-    }
-
-    private boolean getOutputReplaceSelectionByRowIndex(int rowIndex) {
-        return Boolean.parseBoolean(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex())).orElse("false").toString());
+    private ERuntimeBehaviour getRuntimeBehaviourByRowIndex(int rowIndex) {
+        return ERuntimeBehaviour.getEnum(Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.RUNTIME_BEHAVIOUR.getIndex())).orElse("").toString());
     }
 
     private String getGroupByRowIndex(int rowIndex) {
@@ -133,11 +128,10 @@ public class SendToTable extends JTable {
         String name = getNameByRowIndex(rowIndex);
         String command = getCommandByRowIndex(rowIndex);
         String group = getGroupByRowIndex(rowIndex);
-        boolean runInTerminal = getRunInTerminalByRowIndex(rowIndex);
+        ERuntimeBehaviour runtimeBehaviour = getRuntimeBehaviourByRowIndex(rowIndex);
         boolean showPreview = getShowPreviewByRowIndex(rowIndex);
-        boolean outputReplaceSelection = getOutputReplaceSelectionByRowIndex(rowIndex);
         List<PlaceholderBehaviour> placeholderBehaviourList = getPlaceholderBehaviourByRowIndex(rowIndex);
-        return new CommandObject(id, name, command, group, runInTerminal, showPreview, outputReplaceSelection, placeholderBehaviourList);
+        return new CommandObject(id, name, command, group, runtimeBehaviour, showPreview, placeholderBehaviourList);
     }
 
     public CommandObject getCommandObjectById(String commandId) {
@@ -167,8 +161,7 @@ public class SendToTable extends JTable {
                 commandObject.getName(),
                 commandObject.getFormat(),
                 commandObject.getGroup(),
-                commandObject.shouldRunInTerminal(),
-                commandObject.shouldOutputReplaceSelection(),
+                commandObject.getRuntimeBehaviour().alternateName(),
                 commandObject.shouldShowPreview(),
                 commandObject.getPlaceholderBehaviourList()
         });
@@ -187,8 +180,7 @@ public class SendToTable extends JTable {
         model.setValueAt(commandObject.getName(), rowIndex, Column.NAME.getIndex());
         model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
         model.setValueAt(commandObject.getFormat(), rowIndex, Column.COMMAND.getIndex());
-        model.setValueAt(commandObject.shouldRunInTerminal(), rowIndex, Column.RUN_IN_TERMINAL.getIndex());
-        model.setValueAt(commandObject.shouldOutputReplaceSelection(), rowIndex, Column.OUTPUT_REPLACE_SELECTION.getIndex());
+        model.setValueAt(commandObject.getRuntimeBehaviour().alternateName(), rowIndex, Column.RUNTIME_BEHAVIOUR.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
         model.setValueAt(commandObject.getPlaceholderBehaviourList(), rowIndex, Column.PLACEHOLDER_BEHAVIOUR.getIndex());
     }

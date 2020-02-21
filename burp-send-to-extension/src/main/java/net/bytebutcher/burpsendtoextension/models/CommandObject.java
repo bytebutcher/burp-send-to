@@ -23,23 +23,21 @@ public class CommandObject {
     @SerializedName(value="format", alternate={"command"}) // Changed field name from "command" to "format" in version 1.1
     private String format;
     private String group;
-    private boolean runInTerminal;
+    private ERuntimeBehaviour runtimeBehaviour;
     private boolean showPreview;
-    private boolean outputReplaceSelection;
     private List<PlaceholderBehaviour> placeholderBehaviourList;
 
-    public CommandObject(String name, String format, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection, List<PlaceholderBehaviour> placeholderBehaviourList) {
+    public CommandObject(String name, String format, String group, ERuntimeBehaviour runtimeBehaviour, boolean showPreview, List<PlaceholderBehaviour> placeholderBehaviourList) {
         this.name = name;
         this.format = format;
         this.group = group;
-        this.runInTerminal = runInTerminal;
+        this.runtimeBehaviour = runtimeBehaviour;
         this.showPreview = showPreview;
-        this.outputReplaceSelection = outputReplaceSelection;
         this.placeholderBehaviourList = initPlaceholderBehaviourList(placeholderBehaviourList);
     }
 
-    public CommandObject(String id, String name, String format, String group, boolean runInTerminal, boolean showPreview, boolean outputReplaceSelection, List<PlaceholderBehaviour> placeholderBehaviourList) {
-        this(name, format, group, runInTerminal, showPreview, outputReplaceSelection, placeholderBehaviourList);
+    public CommandObject(String id, String name, String format, String group, ERuntimeBehaviour runtimeBehaviour, boolean showPreview, List<PlaceholderBehaviour> placeholderBehaviourList) {
+        this(name, format, group, runtimeBehaviour, showPreview, placeholderBehaviourList);
         this.id = id;
     }
 
@@ -85,24 +83,28 @@ public class CommandObject {
         return group;
     }
 
-    public boolean shouldRunInTerminal() {
-        return this.runInTerminal;
+    public ERuntimeBehaviour getRuntimeBehaviour() {
+        return this.runtimeBehaviour != null ? this.runtimeBehaviour : ERuntimeBehaviour.RUN_IN_TERMINAL;
     }
 
-    public boolean shouldShowPreview() {
-        return this.showPreview;
+    public boolean shouldRunInTerminal() {
+        return getRuntimeBehaviour() == ERuntimeBehaviour.RUN_IN_TERMINAL;
+    }
+
+    public boolean shouldOutputReplaceSelection() {
+        return getRuntimeBehaviour() == ERuntimeBehaviour.OUTPUT_SHOULD_REPLACE_SELECTION;
+    }
+
+    public boolean shouldRunInBackground() {
+        return getRuntimeBehaviour() == ERuntimeBehaviour.RUN_IN_BACKGROUND;
     }
 
     public void setShowPreview(boolean showPreview) {
         this.showPreview = showPreview;
     }
 
-    public boolean shouldOutputReplaceSelection() {
-        return outputReplaceSelection;
-    }
-
-    public boolean shouldRunInBackground() {
-        return !runInTerminal && !outputReplaceSelection;
+    public boolean shouldShowPreview() {
+        return this.showPreview;
     }
 
     @Override

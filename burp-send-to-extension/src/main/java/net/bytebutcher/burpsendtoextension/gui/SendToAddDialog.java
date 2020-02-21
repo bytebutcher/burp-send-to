@@ -1,5 +1,6 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
+import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -7,6 +8,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import net.bytebutcher.burpsendtoextension.gui.listener.ToolTipActionListener;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.ERuntimeBehaviour;
 import net.bytebutcher.burpsendtoextension.models.Placeholders;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 
@@ -196,12 +198,18 @@ public class SendToAddDialog {
         return txtGroup.getText();
     }
 
-    private boolean shouldRunInTerminal() {
-        return chkRunInTerminal.isSelected();
-    }
-
-    private boolean shouldOutputReplaceSelection() {
-        return chkOutputShouldReplaceSelection.isSelected();
+    private ERuntimeBehaviour getRuntimeBehaviour() {
+        if (chkRunInTerminal.isSelected()) {
+            return ERuntimeBehaviour.RUN_IN_TERMINAL;
+        }
+        if (chkOutputShouldReplaceSelection.isSelected()) {
+            return ERuntimeBehaviour.OUTPUT_SHOULD_REPLACE_SELECTION;
+        }
+        if (chkRunInBackground.isSelected()) {
+            return ERuntimeBehaviour.RUN_IN_BACKGROUND;
+        }
+        BurpExtender.printErr("Error parsing runtime behaviour. Please file a bug report if you encounter this error more often.");
+        return ERuntimeBehaviour.RUN_IN_TERMINAL; // Return sane default
     }
 
     private boolean shouldShowPreview() {
@@ -213,7 +221,7 @@ public class SendToAddDialog {
     }
 
     public CommandObject getCommandObject() {
-        return new CommandObject(getName(), getCommand(), getGroup(), shouldRunInTerminal(), shouldShowPreview(), shouldOutputReplaceSelection(), getPlaceholderBehaviourList());
+        return new CommandObject(getName(), getCommand(), getGroup(), getRuntimeBehaviour(), shouldShowPreview(), getPlaceholderBehaviourList());
     }
 
     {

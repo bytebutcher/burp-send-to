@@ -75,35 +75,35 @@ public class Config {
         List<PlaceholderBehaviour> defaultPlaceholderBehaviour = Lists.newArrayList();
         return Lists.newArrayList(
                 // cms
-                new CommandObject("droopescan", "droopescan scan drupal -u %U -t 10", groupCMS, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("mooscan", "mooscan -v --url %U", groupCMS, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("wpscan", "wpscan --url %U --threads 10", groupCMS, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("droopescan", "droopescan scan drupal -u %U -t 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("mooscan", "mooscan -v --url %U", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("wpscan", "wpscan --url %U --threads 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
                 // fuzz
-                new CommandObject("bfac", "bfac --url %U", groupFuzz, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("gobuster", "gobuster -u %U -s 403,404 -w /usr/share/wfuzz/wordlist/general/common.txt", groupFuzz, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("nikto", "nikto %U", groupFuzz, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("wfuzz", "wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt --hc 404,403 %U", groupFuzz, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("bfac", "bfac --url %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("gobuster", "gobuster -u %U -s 403,404 -w /usr/share/wfuzz/wordlist/general/common.txt", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("nikto", "nikto %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("wfuzz", "wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt --hc 404,403 %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
                 // sql
-                new CommandObject("sqlmap (GET)", "sqlmap -o -u %U --level=5 --risk=3", groupSQL, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("sqlmap (POST)", "sqlmap -r %R  --level=5 --risk=3", groupSQL, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("sqlmap (GET)", "sqlmap -o -u %U --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("sqlmap (POST)", "sqlmap -r %R  --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
                 // ssl
-                new CommandObject("sslscan", "sslscan %H:%P", groupSSL, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("sslscan", "sslscan %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
                 // other
-                new CommandObject("Host (%H)", "echo %H", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("Port (%P)", "echo %P", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("Protocol (%T)", "echo %T", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("URL (%U)", "echo %U", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Path (%A)", "echo %A", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("Cookies (%C)", "echo %C", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("Selected text (%S)", "echo %S", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, true, true, false, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Body as file (%B)", "echo %B && cat %B", groupOther, true, true, false, defaultPlaceholderBehaviour)
+                new CommandObject("Host (%H)", "echo %H", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("Port (%P)", "echo %P", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("Protocol (%T)", "echo %T", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("URL (%U)", "echo %U", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("URL-Path (%A)", "echo %A", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("Cookies (%C)", "echo %C", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("Selected text (%S)", "echo %S", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("HTTP-Body as file (%B)", "echo %B && cat %B", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour)
         );
     }
 

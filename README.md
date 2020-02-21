@@ -29,22 +29,30 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 * **Show preview:** gives you the chance to preview and change the command before executing it.
 * **Output should replace selection:** will replace the selection with the output of the to be executed command.
 
+![Burp-Send-To-Extension Add-/Edit-Dialog](images/burp-send-to-extension-add-edit-dialog.png)
+
 In addition it is possible to customize how placeholders behave when multiple HTTP messages are selected by clicking the "Advanced"-button. 
 By default each selected HTTP message forms a separate command. However, it is also possible to join all values of a specific placeholder using a custom separator.
 
-![Burp-Send-To-Extension Add-/Edit-Dialog](images/burp-send-to-extension-add-edit-dialog.png)
 ![Burp-Send-To-Extension Advanced-Dialog](images/burp-send-to-extension-advanced-dialog.png)
 
 After creating new context-menu-entries using the "Add"-button they can be edited or deleted again using the "Edit"- and "Remove"-button. In addition the order in which they appear in the context-menu can be altered using the "Up"- and "Down"-button.
 
 ![Burp-Send-To-Extension Tab](images/burp-send-to-extension-tab.png)
 
+## Terminal Options
+
+The "Terminal Options" allow to configure the graphical terminal to use. In addition it is possible to specify how multiple commands should be run in terminal. Multiple commands can either be run sequential in a single terminal or in parallel in separate terminals. While it's possible to choose a default behaviour, the exact behaviour can also be selected via a dialog, everytime a send-to context menu entry is selected. However, if you prefer one behaviour all the time, this dialog can also be disabled.
+
 ## Context-Menu
 
 The "Send to..." context-menu contains all entries which were added in the "Send to"-Tab.
 In addition you can add new entries via the "Custom command..."-context-menu-entry.
 
+**Request Field**
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
+
+**Proxy History**
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
 
 ## Save and load options

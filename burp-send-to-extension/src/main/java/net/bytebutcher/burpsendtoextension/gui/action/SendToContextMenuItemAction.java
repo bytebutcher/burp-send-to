@@ -69,7 +69,7 @@ public class SendToContextMenuItemAction extends AbstractAction {
         if (containsMultipleCommands && BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog()) {
             SendToRunInTerminalBehaviourChoiceDialog.EChoice choice = null;
             while (choice != SendToRunInTerminalBehaviourChoiceDialog.EChoice.RUN_IN_SEPARATE_TERMINALS && choice != SendToRunInTerminalBehaviourChoiceDialog.EChoice.RUN_IN_SINGLE_TERMINAL) {
-                choice = new SendToRunInTerminalBehaviourChoiceDialog(BurpExtender.getParent(), command.split("\n").length).run();
+                choice = new SendToRunInTerminalBehaviourChoiceDialog(BurpExtender.getParent(), runInTerminalBehaviour, command.split("\n").length).run();
                 switch (choice) {
                     case RUN_IN_SINGLE_TERMINAL:
                         runInTerminalBehaviour = ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL;
