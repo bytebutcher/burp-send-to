@@ -53,7 +53,7 @@ In addition you can add new entries via the "Custom command..."-context-menu-ent
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-repeater.png)
 
-####Proxy History
+#### Proxy History
 
 ![Burp-Send-To-Extension Context-Menu](images/burp-send-to-extension-context-menu-target-sitemap.png)
 
