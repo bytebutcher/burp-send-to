@@ -3,10 +3,12 @@ package net.bytebutcher.burpsendtoextension.gui.action;
 import burp.BurpExtender;
 import net.bytebutcher.burpsendtoextension.executioner.CommandExecutioner;
 import net.bytebutcher.burpsendtoextension.gui.SendToPreviewDialog;
+import net.bytebutcher.burpsendtoextension.gui.SendToRunInTerminalBehaviourChoiceDialog;
 import net.bytebutcher.burpsendtoextension.gui.SendToTableListener;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.Context;
+import net.bytebutcher.burpsendtoextension.models.ERunInTerminalBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.IPlaceholderParser;
 
 import javax.swing.*;
@@ -37,7 +39,14 @@ public class SendToContextMenuItemAction extends AbstractAction {
             if (commandObject.shouldShowPreview()) {
                 command = showSendToPreviewDialog(commandObject.getId(), command);
             }
-            new CommandExecutioner(command, commandObject.shouldRunInTerminal(), commandObject.shouldOutputReplaceSelection(), context).execute();
+            if (command == null) {
+                return;
+            }
+            if (commandObject.shouldRunInTerminal()) {
+                runCommandInTerminal(command);
+            } else {
+                runCommandInBackground(command);
+            }
         } catch (Exception e1) {
             DialogUtil.showErrorDialog(
                     BurpExtender.getParent(),
@@ -50,12 +59,47 @@ public class SendToContextMenuItemAction extends AbstractAction {
         }
     }
 
+    private void runCommandInBackground(String command) throws Exception {
+        new CommandExecutioner(commandObject.shouldOutputReplaceSelection(), context).execute(command);
+    }
+
+    private void runCommandInTerminal(String command) throws Exception {
+        ERunInTerminalBehaviour runInTerminalBehaviour = BurpExtender.getConfig().getRunInTerminalBehaviour();
+        boolean containsMultipleCommands = command.contains("\n");
+        if (containsMultipleCommands && BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog()) {
+            SendToRunInTerminalBehaviourChoiceDialog.EChoice choice = null;
+            while (choice != SendToRunInTerminalBehaviourChoiceDialog.EChoice.RUN_IN_SEPARATE_TERMINALS && choice != SendToRunInTerminalBehaviourChoiceDialog.EChoice.RUN_IN_SINGLE_TERMINAL) {
+                choice = new SendToRunInTerminalBehaviourChoiceDialog(BurpExtender.getParent(), command.split("\n").length).run();
+                switch (choice) {
+                    case RUN_IN_SINGLE_TERMINAL:
+                        runInTerminalBehaviour = ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL;
+                        break;
+                    case RUN_IN_SEPARATE_TERMINALS:
+                        runInTerminalBehaviour = ERunInTerminalBehaviour.RUN_IN_SEPARATE_TERMINALS;
+                        break;
+                    case REVIEW_COMMANDS:
+                        command = showSendToPreviewDialog(command);
+                        if (command == null) {
+                            return;
+                        }
+                    case CANCEL:
+                        return;
+                }
+            }
+        }
+        new CommandExecutioner(runInTerminalBehaviour, commandObject.shouldOutputReplaceSelection(), context).execute(command);
+    }
+
+    private String showSendToPreviewDialog(String command) {
+        SendToPreviewDialog previewDialog = new SendToPreviewDialog(BurpExtender.getParent(), "Review commands", command);
+        return previewDialog.run() ? previewDialog.getCommand() : null;
+    }
+
     private String showSendToPreviewDialog(String id, String command) throws Exception {
         SendToPreviewDialog previewDialog = new SendToPreviewDialog(
                 BurpExtender.getParent(),
                 "Execute command?",
-                id,
-                command,
+                command, id,
                 sendToTableListener
         );
         if (!previewDialog.run()) {

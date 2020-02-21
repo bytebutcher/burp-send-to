@@ -8,6 +8,7 @@ import net.bytebutcher.burpsendtoextension.gui.listener.ToolTipActionListener;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.gui.util.WebUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.ERunInTerminalBehaviour;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -33,6 +34,9 @@ public class SendToTab {
     private JLabel lblHelp;
     private JTextField txtRunInTerminal;
     private JButton btnRunInTerminalHelp;
+    private JRadioButton chkRunInSingleTerminal;
+    private JRadioButton chkRunInSeparateTerminals;
+    private JCheckBox chkShowRunInTerminalBehaviourChoiceDialog;
     private SendToTableListener sendToTableListener;
     private final SendToTabSettingsContextMenu sendToTabSettingsContextMenu;
 
@@ -110,6 +114,16 @@ public class SendToTab {
                 "<p>%C = Command</p>" +
                 "</html>")
         );
+        chkRunInSingleTerminal.setSelected(BurpExtender.getConfig().getRunInTerminalBehaviour() == ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL);
+        chkRunInSingleTerminal.addChangeListener(e -> {
+            BurpExtender.getConfig().setRunInTerminalBehaviour(chkRunInSingleTerminal.isSelected() ? ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL : ERunInTerminalBehaviour.RUN_IN_SEPARATE_TERMINALS);
+        });
+        chkRunInSeparateTerminals.setSelected(BurpExtender.getConfig().getRunInTerminalBehaviour() == ERunInTerminalBehaviour.RUN_IN_SEPARATE_TERMINALS);
+        chkRunInSeparateTerminals.addChangeListener(e -> {
+            BurpExtender.getConfig().setRunInTerminalBehaviour(chkRunInSeparateTerminals.isSelected() ? ERunInTerminalBehaviour.RUN_IN_SEPARATE_TERMINALS : ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL);
+        });
+        chkShowRunInTerminalBehaviourChoiceDialog.setSelected(BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog());
+        chkShowRunInTerminalBehaviourChoiceDialog.addChangeListener(e -> BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog(chkShowRunInTerminalBehaviourChoiceDialog.isSelected()));
     }
 
     public void resetOptions() {
@@ -189,13 +203,13 @@ public class SendToTab {
         lblHelp.setText("");
         panel5.add(lblHelp, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
         formPanel.add(panel6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         Font label3Font = this.$$$getFont$$$("Tahoma", Font.BOLD, 14, label3.getFont());
         if (label3Font != null) label3.setFont(label3Font);
         label3.setForeground(new Color(-1341440));
-        label3.setText("Miscellaneous Options");
+        label3.setText("Terminal Options");
         panel6.add(label3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(1, 1, new Insets(2, 2, 2, 2), -1, -1));
@@ -204,22 +218,48 @@ public class SendToTab {
         label4.setText("");
         panel7.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
-        label5.setText("Manage miscellaneous options.");
-        panel6.add(label5, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel8 = new JPanel();
-        panel8.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel6.add(panel8, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        label5.setText("When multiple commands are going to be executed at once");
+        panel6.add(label5, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        label6.setText("Run in terminal:");
-        panel8.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label6.setText("Specify how to run commands in terminal:");
+        panel6.add(label6, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel8 = new JPanel();
+        panel8.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.add(panel8, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         txtRunInTerminal = new JTextField();
         txtRunInTerminal.setText("/bin/bash -c {CMD}");
-        panel8.add(txtRunInTerminal, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel8.add(txtRunInTerminal, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         btnRunInTerminalHelp = new JButton();
         btnRunInTerminalHelp.setText("?");
-        panel8.add(btnRunInTerminalHelp, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel8.add(btnRunInTerminalHelp, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        chkShowRunInTerminalBehaviourChoiceDialog = new JCheckBox();
+        chkShowRunInTerminalBehaviourChoiceDialog.setText("Show dialog to select execution behaviour when multiple commands are going to be executed");
+        panel6.add(chkShowRunInTerminalBehaviourChoiceDialog, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel9 = new JPanel();
+        panel9.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.add(panel9, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        chkRunInSingleTerminal = new JRadioButton();
+        chkRunInSingleTerminal.setText("execute commands sequential in single terminal");
+        panel9.add(chkRunInSingleTerminal, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label7 = new JLabel();
+        label7.setText("  ");
+        panel9.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel10 = new JPanel();
+        panel10.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.add(panel10, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        chkRunInSeparateTerminals = new JRadioButton();
+        chkRunInSeparateTerminals.setText("execute commands in parallel in separate terminals");
+        panel10.add(chkRunInSeparateTerminals, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label8 = new JLabel();
+        label8.setText("  ");
+        panel10.add(label8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         formPanel.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        ButtonGroup buttonGroup;
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(chkRunInSeparateTerminals);
+        buttonGroup.add(chkRunInSeparateTerminals);
+        buttonGroup.add(chkRunInSingleTerminal);
     }
 
     /**

@@ -91,15 +91,15 @@ public class Config {
                 new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, true, true, false, defaultPlaceholderBehaviour),
                 new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, true, true, false, defaultPlaceholderBehaviour),
                 // other
-                new CommandObject("Host (%H)", "echo %H", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("Port (%P)", "echo %P", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("Protocol (%T)", "echo %T", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL (%U)", "echo %U", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Path (%A)", "echo %A", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("Cookies (%C)", "echo %C", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, true, true, true, defaultPlaceholderBehaviour),
-                new CommandObject("Selected text (%S)", "echo %S", groupOther, true, true, true, defaultPlaceholderBehaviour),
+                new CommandObject("Host (%H)", "echo %H", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("Port (%P)", "echo %P", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("Protocol (%T)", "echo %T", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("URL (%U)", "echo %U", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("URL-Path (%A)", "echo %A", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("Cookies (%C)", "echo %C", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, true, true, false, defaultPlaceholderBehaviour),
+                new CommandObject("Selected text (%S)", "echo %S", groupOther, true, true, false, defaultPlaceholderBehaviour),
                 new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, true, true, false, defaultPlaceholderBehaviour),
                 new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, true, true, false, defaultPlaceholderBehaviour),
                 new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, true, true, false, defaultPlaceholderBehaviour),
@@ -127,10 +127,28 @@ public class Config {
         this.callbacks.saveExtensionSetting("isFirstStart", "false");
     }
 
-    public void resetRunInTerminalCommand() {
-        this.callbacks.saveExtensionSetting("runInTerminalSettingWindows", "cmd  /c start cmd /K %C");
-        this.callbacks.saveExtensionSetting("runInTerminalSettingUnix", "xterm -hold -e %C");
+    public void setRunInTerminalBehaviour(ERunInTerminalBehaviour runInTerminalBehaviour) {
+        this.callbacks.saveExtensionSetting("runInTerminalBehaviour", runInTerminalBehaviour.name());
+    }
 
+    public ERunInTerminalBehaviour getRunInTerminalBehaviour() {
+        String runInTerminalBehaviour = this.callbacks.loadExtensionSetting("runInTerminalBehaviour");
+        if (runInTerminalBehaviour == null || runInTerminalBehaviour.isEmpty()) {
+            return ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL;
+        }
+        return ERunInTerminalBehaviour.valueOf(runInTerminalBehaviour);
+    }
+
+    public boolean shouldShowRunInTerminalBehaviourChoiceDialog() {
+        String showDialog = this.callbacks.loadExtensionSetting("showRunInTerminalBehaviourDialog");
+        if (showDialog == null || showDialog.isEmpty()) {
+            return true; // Default
+        }
+        return Boolean.parseBoolean(showDialog);
+    }
+
+    public void shouldShowRunInTerminalBehaviourChoiceDialog(boolean status) {
+        this.callbacks.saveExtensionSetting("showRunInTerminalBehaviourDialog", String.valueOf(status));
     }
 
     public String getRunInTerminalCommand() {
@@ -158,4 +176,9 @@ public class Config {
         }
     }
 
+    public void resetRunInTerminalCommand() {
+        this.callbacks.saveExtensionSetting("runInTerminalSettingWindows", "cmd  /c start cmd /K %C");
+        this.callbacks.saveExtensionSetting("runInTerminalSettingUnix", "xterm -hold -e %C");
+
+    }
 }

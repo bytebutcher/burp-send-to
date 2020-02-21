@@ -5,37 +5,46 @@ import burp.IHttpRequestResponse;
 import com.google.common.collect.Lists;
 import net.bytebutcher.burpsendtoextension.gui.util.SelectionUtil;
 import net.bytebutcher.burpsendtoextension.models.Context;
+import net.bytebutcher.burpsendtoextension.models.ERunInTerminalBehaviour;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 import net.bytebutcher.burpsendtoextension.utils.StringUtils;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandExecutioner {
 
-    private String command;
+    private final ERunInTerminalBehaviour runInTerminalBehaviour;
     private final boolean shouldOutputReplaceSelection;
-    private final boolean shouldRunInTerminal;
     private final Context context;
 
-    public CommandExecutioner(String command, boolean shouldRunInTerminal, boolean shouldOutputReplaceSelection, Context context) {
-        this.command = command;
+    public CommandExecutioner(boolean shouldOutputReplaceSelection, Context context) {
+        this.runInTerminalBehaviour = null;
         this.shouldOutputReplaceSelection = shouldOutputReplaceSelection;
-        this.shouldRunInTerminal = shouldRunInTerminal;
         this.context = context;
     }
 
-    public void execute() throws Exception {
-        if (command != null) {
+    public CommandExecutioner(ERunInTerminalBehaviour runInTerminalBehaviour, boolean shouldOutputReplaceSelection, Context context) {
+        this.runInTerminalBehaviour = runInTerminalBehaviour;
+        this.shouldOutputReplaceSelection = shouldOutputReplaceSelection;
+        this.context = context;
+    }
+
+    public void execute(String commands) throws Exception {
+        if (commands != null) {
             List<String> commandOutput = Lists.newArrayList();
-            for (String c : command.split("\n")) {
-                ProcessBuilder commandProcessBuilder = getProcessBuilder(c);
-                logCommandToBeExecuted(commandProcessBuilder.command().toArray(new String[commandProcessBuilder.command().size()]));
-                Process process = commandProcessBuilder.start();
-                if (shouldOutputReplaceSelection) {
-                    commandOutput.add(StringUtils.fromInputStream(process.getInputStream()));
+            if (runInTerminalBehaviour != null && runInTerminalBehaviour == ERunInTerminalBehaviour.RUN_IN_SINGLE_TERMINAL) {
+                // Run commands sequential within terminal
+                String command = Arrays.stream(commands.split("\n")).collect(Collectors.joining(" ; "));
+                execute(command, commandOutput);
+            } else {
+                // Run commands in parallel (within separate terminals or in background)
+                for (String command : commands.split("\n")) {
+                    execute(command, commandOutput);
                 }
             }
             if (!commandOutput.isEmpty()) {
@@ -44,8 +53,17 @@ public class CommandExecutioner {
         }
     }
 
+    private void execute(String command, List<String> commandOutput) throws IOException {
+        ProcessBuilder commandProcessBuilder = getProcessBuilder(command);
+        logCommandToBeExecuted(commandProcessBuilder.command().toArray(new String[commandProcessBuilder.command().size()]));
+        Process process = commandProcessBuilder.start();
+        if (shouldOutputReplaceSelection) {
+            commandOutput.add(StringUtils.fromInputStream(process.getInputStream()));
+        }
+    }
+
     private ProcessBuilder getProcessBuilder(String command) {
-        if (shouldRunInTerminal) {
+        if (runInTerminalBehaviour != null) {
             return new ProcessBuilder(formatCommandForRunningInTerminal(command));
         } else {
             return new ProcessBuilder(formatCommandForRunningOnOperatingSystem(command));

@@ -18,21 +18,26 @@ public class SendToPreviewDialog {
     private JCheckBox alwaysShowThisDialogCheckBox;
     private JPanel formPanel;
 
-    private final SendToTableListener sendToTableListener;
+    private SendToTableListener sendToTableListener;
     private AbstractAction onOkAction;
     private AbstractAction onCancelAction;
     private final JDialog dialog;
     private boolean success = false;
 
-    public SendToPreviewDialog(JFrame parent, String title, final String commandId, final String command, final SendToTableListener sendToTableListener) {
-        this.sendToTableListener = sendToTableListener;
+    public SendToPreviewDialog(JFrame parent, String title, final String command) {
         this.dialog = initDialog(parent, title);
         this.txtCommandPreview.setText(command);
-        initEventListener(commandId, sendToTableListener);
+        initEventListener();
         initKeyboardShortcuts();
     }
 
-    private void initEventListener(final String commandId, final SendToTableListener sendToTableListener) {
+    public SendToPreviewDialog(JFrame parent, String title, final String command, final String commandId, final SendToTableListener sendToTableListener) {
+        this(parent, title, command);
+        this.sendToTableListener = sendToTableListener;
+        initEventListener(commandId, sendToTableListener);
+    }
+
+    private void initEventListener() {
         onOkAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -49,12 +54,16 @@ public class SendToPreviewDialog {
             }
         };
         cancelButton.addActionListener(onCancelAction);
+    }
+
+    private void initEventListener(final String commandId, final SendToTableListener sendToTableListener) {
         alwaysShowThisDialogCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendToTableListener.onShowPreviewChange(e, commandId, alwaysShowThisDialogCheckBox.isSelected());
             }
         });
+        alwaysShowThisDialogCheckBox.setVisible(true);
     }
 
     private JDialog initDialog(JFrame parent, String title) {
@@ -86,7 +95,7 @@ public class SendToPreviewDialog {
     }
 
     public String getCommand() {
-        return this.txtCommandPreview.getText();
+        return this.txtCommandPreview.getText().replace("\r", "");
     }
 
     private Component getRootPanel() {
@@ -111,7 +120,7 @@ public class SendToPreviewDialog {
         formPanel = new JPanel();
         formPanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JLabel label1 = new JLabel();
-        label1.setText("Do you really want to execute the following command?");
+        label1.setText("Do you really want to execute the following command(s)?");
         formPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
@@ -131,6 +140,7 @@ public class SendToPreviewDialog {
         alwaysShowThisDialogCheckBox = new JCheckBox();
         alwaysShowThisDialogCheckBox.setSelected(true);
         alwaysShowThisDialogCheckBox.setText("Always show this dialog");
+        alwaysShowThisDialogCheckBox.setVisible(false);
         panel1.add(alwaysShowThisDialogCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         formPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
