@@ -181,4 +181,15 @@ public class Config {
         this.callbacks.saveExtensionSetting("runInTerminalSettingUnix", "xterm -hold -e %C");
 
     }
+
+    public void setSafeMode(boolean status) {
+        this.callbacks.saveExtensionSetting("safeMode", String.valueOf(status));
+    }
+
+    public boolean isSafeModeActivated() {
+        String safeMode = this.callbacks.loadExtensionSetting("safeMode");
+        if (safeMode == null || safeMode.isEmpty())
+            return true;
+        return Boolean.parseBoolean(safeMode);
+    }
 }

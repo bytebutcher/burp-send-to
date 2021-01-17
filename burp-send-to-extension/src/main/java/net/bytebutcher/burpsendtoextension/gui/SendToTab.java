@@ -37,6 +37,7 @@ public class SendToTab {
     private JRadioButton chkRunInSingleTerminal;
     private JRadioButton chkRunInSeparateTerminals;
     private JCheckBox chkShowRunInTerminalBehaviourChoiceDialog;
+    private JCheckBox chkSafeMode;
     private SendToTableListener sendToTableListener;
     private final SendToTabSettingsContextMenu sendToTabSettingsContextMenu;
 
@@ -124,6 +125,8 @@ public class SendToTab {
         });
         chkShowRunInTerminalBehaviourChoiceDialog.setSelected(BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog());
         chkShowRunInTerminalBehaviourChoiceDialog.addChangeListener(e -> BurpExtender.getConfig().shouldShowRunInTerminalBehaviourChoiceDialog(chkShowRunInTerminalBehaviourChoiceDialog.isSelected()));
+        this.chkSafeMode.setSelected(BurpExtender.getConfig().isSafeModeActivated());
+        this.chkSafeMode.addChangeListener(e -> BurpExtender.getConfig().setSafeMode(this.chkSafeMode.isSelected()));
     }
 
     public void resetOptions() {

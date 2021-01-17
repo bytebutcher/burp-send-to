@@ -2,9 +2,12 @@ package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.BurpExtender;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.parser.PlaceholderBehaviourDeserializer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -45,6 +48,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
         loadOptions.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                burpExtender.getCallbacks().printOutput("Loading options...");
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Load \"Send to\" options from file...");
                 fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -52,9 +56,14 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
-                        List<CommandObject> commandObjectList = new Gson().fromJson(new FileReader(selectedFile), new TypeToken<List<CommandObject>>(){}.getType());
+                        burpExtender.getCallbacks().printOutput("Reading selected file: " + selectedFile.getAbsolutePath());
+                        List<CommandObject> commandObjectList = new GsonBuilder()
+                                .registerTypeAdapter(PlaceholderBehaviour.class, new PlaceholderBehaviourDeserializer())
+                                .create().fromJson(new FileReader(selectedFile), new TypeToken<List<CommandObject>>(){}.getType());
+                        burpExtender.getCallbacks().printOutput("Adding " + commandObjectList.size() + " items to table...");
                         sendToTable.removeAll();
                         sendToTable.addCommandObjects(commandObjectList);
+                        burpExtender.getCallbacks().printOutput("Successfully loaded options into table!");
                     } catch (FileNotFoundException e1) {
                         DialogUtil.showErrorDialog(
                                 sendToTab.getParent(),
@@ -64,8 +73,10 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                         );
                         burpExtender.getCallbacks().printError("Error while loading options: " + e1);
                         return;
+                    } catch (Exception e2) {
+                        burpExtender.getCallbacks().printError("Error while loading options: " + e2);
+                        return;
                     }
-                    burpExtender.getCallbacks().printOutput("Successfully loaded options from '" + selectedFile.getAbsolutePath() + "'!");
                 }
             }
         });
