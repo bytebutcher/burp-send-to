@@ -6,10 +6,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.CommandSeparatedPlaceholderBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.StringSeparatedPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.parser.CommandObjectFileParser;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 
 import java.util.ArrayList;
@@ -18,26 +16,18 @@ import java.util.List;
 public class Config {
 
     private final IBurpExtenderCallbacks callbacks;
-    private final Gson gson;
     private BurpExtender burpExtender;
     private String version = "1.3";
 
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
         this.callbacks = BurpExtender.getCallbacks();
-        this.gson = initGson();
         refreshVersion();
     }
 
-    private Gson initGson() {
-        RuntimeTypeAdapterFactory<PlaceholderBehaviour> placeholderBehaviourAdapterFactory = RuntimeTypeAdapterFactory.of(PlaceholderBehaviour.class, "type")
-                .registerSubtype(StringSeparatedPlaceholderBehaviour.class, "StringSeparated")
-                .registerSubtype(CommandSeparatedPlaceholderBehaviour.class, "CommandSeparated");
-        return new GsonBuilder().registerTypeAdapterFactory(placeholderBehaviourAdapterFactory).create();
-    }
-
     public void saveSendToTableData(List<CommandObject> sendToTableData) {
-        this.callbacks.saveExtensionSetting("SendToTableData", gson.toJson(sendToTableData));
+        this.callbacks.saveExtensionSetting("SendToTableData",
+                CommandObjectFileParser.getParser().toJson(sendToTableData));
     }
 
     public List<CommandObject> getSendToTableData() {
@@ -51,7 +41,8 @@ public class Config {
                 }
                 return commandObjectList;
             }
-            return gson.fromJson(sendToTableData, new TypeToken<List<CommandObject>>() {}.getType());
+            return CommandObjectFileParser.getParser()
+                    .fromJson(sendToTableData, new TypeToken<List<CommandObject>>() {}.getType());
         } catch (Exception e) {
             BurpExtender.printErr("Error retrieving table data!");
             BurpExtender.printErr(e.toString());
