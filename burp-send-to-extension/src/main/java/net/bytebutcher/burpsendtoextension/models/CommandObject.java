@@ -1,5 +1,6 @@
 package net.bytebutcher.burpsendtoextension.models;
 
+import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 import net.bytebutcher.burpsendtoextension.models.placeholder.AbstractRequestResponseInfoPlaceholder;
@@ -202,8 +203,13 @@ public class CommandObject {
             // combine the values of all messages using the defined placeholder separator
             value = getValid(placeholderMap, context).stream().map(m -> m.get(internalPlaceHolder)).map(iPlaceholder -> iPlaceholder.getValue(context)).collect(Collectors.joining(((StringSeparatedPlaceholderBehaviour) getPlaceholderBehaviourList().get(messageIndex)).getSeparator()));
         }
+        boolean isSafeModeActivated = BurpExtender.getConfig().isSafeModeActivated();
         boolean doesRequireShellEscape = placeholderMap.get(0).get(internalPlaceHolder).doesRequireShellEscape();
-        command = command.replace(internalPlaceHolder, doesRequireShellEscape ? "'" + StringUtils.shellEscape(value) + "'" : value);
+        if (isSafeModeActivated && doesRequireShellEscape) {
+            command = command.replace(internalPlaceHolder, "'" + StringUtils.shellEscape(value) + "'");
+        } else {
+            command = command.replace(internalPlaceHolder, value);
+        }
         return command;
     }
 
