@@ -151,6 +151,7 @@ public class SendToAddDialog {
                 "<p>%A = URL-Path</p>" +
                 "<p>%Q = URL-Query</p>" +
                 "<p>%C = Cookies</p>" +
+                "<p>%L = HTTP-Content-Length</p>" +
                 "<p>%M = HTTP-Method</p>" +
                 "<p>%O = HTTP-Status-Code</p>" +
                 "<p>%S = Selected text</p>" +

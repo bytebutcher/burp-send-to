@@ -18,8 +18,9 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 	* **%A:** will be replaced with the url path
 	* **%Q:** will be replaced with the url query
 	* **%C:** will be replaced with the cookies
+	* **%L:** will be replaced with the HTTP-content-length
 	* **%M:** will be replaced with the HTTP-method
-        * **%O:** will be replaced with the HTTP-status-code
+	* **%O:** will be replaced with the HTTP-status-code
 	* **%S:** will be replaced with the selected text
 	* **%F:** will be replaced with the path to a temporary file containing the selected text
 	* **%R:** will be replaced with the path to a temporary file containing the content of the focused request/response
