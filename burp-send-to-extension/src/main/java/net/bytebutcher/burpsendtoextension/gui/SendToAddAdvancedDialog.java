@@ -1,14 +1,11 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
-import burp.BurpExtender;
 import com.google.common.collect.Lists;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.CommandSeparatedPlaceholderBehaviour;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.StringSeparatedPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.CommandObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +14,7 @@ import java.util.List;
 
 public class SendToAddAdvancedDialog extends JDialog {
     private final Component parent;
-    private final List<PlaceholderBehaviour> placeholderBehaviourList;
+    private final List<CommandObject.Placeholder> placeholders;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -25,9 +22,9 @@ public class SendToAddAdvancedDialog extends JDialog {
 
     private boolean success = false;
 
-    public SendToAddAdvancedDialog(Component parent, List<PlaceholderBehaviour> placeholderBehaviourList) {
+    public SendToAddAdvancedDialog(Component parent, List<CommandObject.Placeholder> placeholders) {
         this.parent = parent;
-        this.placeholderBehaviourList = placeholderBehaviourList;
+        this.placeholders = placeholders;
         $$$setupUI$$$();
 
         setContentPane(contentPane);
@@ -63,12 +60,12 @@ public class SendToAddAdvancedDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public List<PlaceholderBehaviour> getPlaceholderBehaviourList() {
-        List<PlaceholderBehaviour> placeholderBehaviourList = Lists.newArrayList();
+    public List<CommandObject.Placeholder> getPlaceholders() {
+        List<CommandObject.Placeholder> placeholders = Lists.newArrayList();
         for (Component component : pnlPlaceholderBehaviour.getComponents()) {
-            placeholderBehaviourList.add(((SendToAddAdvancedPlaceholderBehaviourPanel) component).getPlaceholderBehaviour());
+            placeholders.add(((SendToAddAdvancedPlaceholderBehaviourPanel) component).getPlaceholder());
         }
-        return placeholderBehaviourList;
+        return placeholders;
     }
 
     private void onOK() {
@@ -82,14 +79,8 @@ public class SendToAddAdvancedDialog extends JDialog {
     }
 
     public boolean run() {
-        for (PlaceholderBehaviour placeholderBehaviour : placeholderBehaviourList) {
-            if (placeholderBehaviour instanceof StringSeparatedPlaceholderBehaviour) {
-                pnlPlaceholderBehaviour.add(new SendToAddAdvancedPlaceholderBehaviourPanel((StringSeparatedPlaceholderBehaviour) placeholderBehaviour));
-            } else if (placeholderBehaviour instanceof CommandSeparatedPlaceholderBehaviour) {
-                pnlPlaceholderBehaviour.add(new SendToAddAdvancedPlaceholderBehaviourPanel((CommandSeparatedPlaceholderBehaviour) placeholderBehaviour));
-            } else {
-                BurpExtender.printErr("Unknown placeholder behaviour! This is a programming error and should not happen!");
-            }
+        for (CommandObject.Placeholder placeholder : placeholders) {
+            pnlPlaceholderBehaviour.add(new SendToAddAdvancedPlaceholderBehaviourPanel(placeholder));
         }
         this.setSize(450, 250);
         int x = DialogUtil.getX(parent, this);

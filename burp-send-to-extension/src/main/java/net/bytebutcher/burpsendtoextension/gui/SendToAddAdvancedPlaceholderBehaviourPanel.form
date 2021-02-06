@@ -23,7 +23,8 @@
         <properties>
           <model>
             <item value="split into separate commands"/>
-            <item value="separated by string"/>
+            <item value="separate by string"/>
+            <item value="merge into file"/>
           </model>
         </properties>
       </component>

@@ -1,11 +1,10 @@
 package net.bytebutcher.burpsendtoextension.models.placeholder.behaviour;
 
-public class StringSeparatedPlaceholderBehaviour extends PlaceholderBehaviour {
+public class StringSeparatedPlaceholderBehaviour implements IPlaceholderBehaviour {
 
     private final String separator;
 
-    public StringSeparatedPlaceholderBehaviour(String placeholder, String separator) {
-        super(placeholder);
+    public StringSeparatedPlaceholderBehaviour(String separator) {
         this.separator = separator;
     }
 

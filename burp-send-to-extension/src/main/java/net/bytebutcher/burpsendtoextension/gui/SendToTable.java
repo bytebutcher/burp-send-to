@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.ERuntimeBehaviour;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class SendToTable extends JTable {
         GROUP(3),
         RUNTIME_BEHAVIOUR(4),
         SHOW_PREVIEW(5),
-        PLACEHOLDER_BEHAVIOUR(6);
+        PLACEHOLDERS(6);
 
         private final int index;
 
@@ -37,15 +37,30 @@ public class SendToTable extends JTable {
         }
     }
 
+    private class SendToTableModel extends DefaultTableModel {
+
+        private boolean areEventsBlocked;
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        @Override
+        public void fireTableChanged(TableModelEvent e) {
+            if (!areEventsBlocked) {
+                super.fireTableChanged(e);
+            }
+        }
+
+        public void setBlockEvents(boolean areEventsBlocked) {
+            this.areEventsBlocked = areEventsBlocked;
+        }
+    }
+
     public SendToTable(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
-
-        this.defaultModel = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        this.defaultModel = new SendToTableModel();
         this.defaultModel.addColumn("Id");
         this.defaultModel.addColumn("Name");
         this.defaultModel.addColumn("Command");
@@ -54,7 +69,7 @@ public class SendToTable extends JTable {
         this.defaultModel.addColumn("Show preview");
         this.defaultModel.addColumn("Placeholder behaviour");
         setModel(this.defaultModel);
-        hideColumns(Column.ID, Column.COMMAND, Column.PLACEHOLDER_BEHAVIOUR);
+        hideColumns(Column.ID, Column.COMMAND, Column.PLACEHOLDERS);
     }
 
     private void hideColumns(Column ... c) {
@@ -106,9 +121,9 @@ public class SendToTable extends JTable {
         return Optional.ofNullable(this.getModel().getValueAt(rowIndex, Column.COMMAND.getIndex())).orElse("").toString();
     }
 
-    private List<PlaceholderBehaviour> getPlaceholderBehaviourByRowIndex(int rowIndex) {
+    private List<CommandObject.Placeholder> getPlaceholders(int rowIndex) {
         try {
-            return (List<PlaceholderBehaviour>) this.getModel().getValueAt(rowIndex, Column.PLACEHOLDER_BEHAVIOUR.getIndex());
+            return Lists.newArrayList((List<CommandObject.Placeholder>) this.getModel().getValueAt(rowIndex, Column.PLACEHOLDERS.getIndex()));
         } catch (Exception e) {
             BurpExtender.printErr("Casting of placeholder behaviour failed for row " + rowIndex);
             return Lists.newArrayList();
@@ -116,7 +131,7 @@ public class SendToTable extends JTable {
     }
 
     public List<CommandObject> getCommandObjects() {
-        List<CommandObject> commandObjects = new ArrayList<CommandObject>();
+        List<CommandObject> commandObjects = Lists.newArrayList();
         for (int i = 0; i < this.getDefaultModel().getRowCount(); i++) {
             commandObjects.add(getCommandObjectByRowIndex(i));
         }
@@ -130,8 +145,8 @@ public class SendToTable extends JTable {
         String group = getGroupByRowIndex(rowIndex);
         ERuntimeBehaviour runtimeBehaviour = getRuntimeBehaviourByRowIndex(rowIndex);
         boolean showPreview = getShowPreviewByRowIndex(rowIndex);
-        List<PlaceholderBehaviour> placeholderBehaviourList = getPlaceholderBehaviourByRowIndex(rowIndex);
-        return new CommandObject(id, name, command, group, runtimeBehaviour, showPreview, placeholderBehaviourList);
+        List<CommandObject.Placeholder> placeholders = getPlaceholders(rowIndex);
+        return new CommandObject(id, name, command, group, runtimeBehaviour, showPreview, placeholders);
     }
 
     public CommandObject getCommandObjectById(String commandId) {
@@ -163,7 +178,7 @@ public class SendToTable extends JTable {
                 commandObject.getGroup(),
                 commandObject.getRuntimeBehaviour().alternateName(),
                 commandObject.shouldShowPreview(),
-                commandObject.getPlaceholderBehaviourList()
+                commandObject.getPlaceholders()
         });
     }
 
@@ -176,13 +191,16 @@ public class SendToTable extends JTable {
 
     private void editRow(int rowIndex, CommandObject commandObject) {
         DefaultTableModel model = getDefaultModel();
+        ((SendToTableModel) getDefaultModel()).setBlockEvents(true);
         model.setValueAt(commandObject.getId(), rowIndex, Column.ID.getIndex());
         model.setValueAt(commandObject.getName(), rowIndex, Column.NAME.getIndex());
         model.setValueAt(commandObject.getGroup(), rowIndex, Column.GROUP.getIndex());
         model.setValueAt(commandObject.getFormat(), rowIndex, Column.COMMAND.getIndex());
         model.setValueAt(commandObject.getRuntimeBehaviour().alternateName(), rowIndex, Column.RUNTIME_BEHAVIOUR.getIndex());
         model.setValueAt(commandObject.shouldShowPreview(), rowIndex, Column.SHOW_PREVIEW.getIndex());
-        model.setValueAt(commandObject.getPlaceholderBehaviourList(), rowIndex, Column.PLACEHOLDER_BEHAVIOUR.getIndex());
+        model.setValueAt(commandObject.getPlaceholders(), rowIndex, Column.PLACEHOLDERS.getIndex());
+        ((SendToTableModel) getDefaultModel()).setBlockEvents(false);
+        getDefaultModel().fireTableDataChanged();
     }
 
     public void editCommandObject(CommandObject commandObject) {

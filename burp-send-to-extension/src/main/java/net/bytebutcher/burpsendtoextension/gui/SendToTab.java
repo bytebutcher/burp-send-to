@@ -50,7 +50,7 @@ public class SendToTab {
         $$$setupUI$$$();
         this.lblHelp.setIcon(this.burpExtender.createImageIcon("/panel_help.png", "", 24, 24));
         this.lblSettings.setIcon(this.burpExtender.createImageIcon("/panel_settings.png", "", 24, 24));
-        this.sendToTableListener = new SendToTableListener(this.tblSendTo, this.sendToTable, burpExtender);
+        this.sendToTableListener = new SendToTableListener(this.sendToTable);
         this.tblSendTo.getModel().addTableModelListener(sendToTableListener);
         btnAdd.addActionListener(e -> new Thread(() -> {
             SendToAddDialog addDialog = new SendToAddDialog(getParent(), "Add context menu entry", sendToTable.getCommandObjects());

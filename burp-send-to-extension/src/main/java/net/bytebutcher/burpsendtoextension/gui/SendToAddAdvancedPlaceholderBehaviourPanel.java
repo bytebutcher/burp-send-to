@@ -1,9 +1,12 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
+import burp.BurpExtender;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.CommandSeparatedPlaceholderBehaviour;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.FileSeparatedPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.IPlaceholderBehaviour;
 import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.StringSeparatedPlaceholderBehaviour;
 
 import javax.swing.*;
@@ -13,57 +16,65 @@ import java.awt.event.ActionListener;
 
 public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
 
+    private final CommandObject.Placeholder placeholder;
+
     private JTextField txtSeparator;
     private JPanel pnlMain;
     private JComboBox cmbSeperator;
     private JLabel lblPlaceholder;
 
-    public SendToAddAdvancedPlaceholderBehaviourPanel(StringSeparatedPlaceholderBehaviour placeholderBehaviour) {
+    public SendToAddAdvancedPlaceholderBehaviourPanel(CommandObject.Placeholder placeholder) {
+        this.placeholder = placeholder;
         this.add(pnlMain);
-        initFields(placeholderBehaviour);
+        this.lblPlaceholder.setText(placeholder.getName());
+        initFields();
         initEventListener();
     }
 
-    public SendToAddAdvancedPlaceholderBehaviourPanel(CommandSeparatedPlaceholderBehaviour placeholderBehaviour) {
-        this.add(pnlMain);
-        initFields(placeholderBehaviour);
-        initEventListener();
-    }
-
-    private void initFields(CommandSeparatedPlaceholderBehaviour placeholderBehaviour) {
-        this.lblPlaceholder.setText(placeholderBehaviour.getPlaceholder());
-        this.txtSeparator.setText("");
-        this.txtSeparator.setEnabled(false);
-        this.cmbSeperator.setSelectedIndex(0);
-    }
-
-    private void initFields(StringSeparatedPlaceholderBehaviour placeholderBehaviour) {
-        this.lblPlaceholder.setText(placeholderBehaviour.getPlaceholder());
-        this.txtSeparator.setText(placeholderBehaviour.getSeparator());
-        this.txtSeparator.setEnabled(true);
-        this.cmbSeperator.setSelectedIndex(1);
+    private void initFields() {
+        IPlaceholderBehaviour placeholderBehaviour = placeholder.getBehaviour();
+        if (placeholderBehaviour instanceof StringSeparatedPlaceholderBehaviour) {
+            this.txtSeparator.setText(((StringSeparatedPlaceholderBehaviour) placeholderBehaviour).getSeparator());
+            this.txtSeparator.setEnabled(true);
+            this.cmbSeperator.setSelectedIndex(1);
+        } else if (placeholderBehaviour instanceof FileSeparatedPlaceholderBehaviour) {
+            this.txtSeparator.setText("");
+            this.txtSeparator.setEnabled(false);
+            this.cmbSeperator.setSelectedIndex(2);
+        } else {
+            this.txtSeparator.setText("");
+            this.txtSeparator.setEnabled(false);
+            this.cmbSeperator.setSelectedIndex(0);
+        }
     }
 
     private void initEventListener() {
         this.cmbSeperator.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (cmbSeperator.getSelectedIndex() == 0) {
-                    txtSeparator.setEnabled(false);
+                if (cmbSeperator.getSelectedIndex() == 1) {
+                    txtSeparator.setEnabled(true);
                     txtSeparator.setText("");
                 } else {
-                    txtSeparator.setEnabled(true);
+                    txtSeparator.setEnabled(false);
                     txtSeparator.setText("");
                 }
             }
         });
     }
 
-    public PlaceholderBehaviour getPlaceholderBehaviour() {
-        if (cmbSeperator.getSelectedIndex() == 0) {
-            return new CommandSeparatedPlaceholderBehaviour(lblPlaceholder.getText());
-        } else {
-            return new StringSeparatedPlaceholderBehaviour(lblPlaceholder.getText(), txtSeparator.getText());
+    public CommandObject.Placeholder getPlaceholder() {
+        switch (cmbSeperator.getSelectedIndex()) {
+            case 1:
+                placeholder.setBehaviour(new StringSeparatedPlaceholderBehaviour(txtSeparator.getText()));
+                break;
+            case 2:
+                placeholder.setBehaviour(new FileSeparatedPlaceholderBehaviour());
+                break;
+            default:
+                placeholder.setBehaviour(new CommandSeparatedPlaceholderBehaviour());
+                break;
         }
+        return placeholder;
     }
 
     {
@@ -88,7 +99,8 @@ public class SendToAddAdvancedPlaceholderBehaviourPanel extends JPanel {
         cmbSeperator = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("split into separate commands");
-        defaultComboBoxModel1.addElement("separated by string");
+        defaultComboBoxModel1.addElement("separate by string");
+        defaultComboBoxModel1.addElement("merge into file");
         cmbSeperator.setModel(defaultComboBoxModel1);
         pnlMain.add(cmbSeperator, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         lblPlaceholder = new JLabel();

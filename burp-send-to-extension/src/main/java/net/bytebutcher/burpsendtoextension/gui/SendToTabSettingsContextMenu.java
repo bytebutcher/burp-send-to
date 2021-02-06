@@ -1,10 +1,10 @@
 package net.bytebutcher.burpsendtoextension.gui;
 
 import burp.BurpExtender;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
-import net.bytebutcher.burpsendtoextension.parser.CommandObjectFileParser;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -55,8 +55,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
                         burpExtender.getCallbacks().printOutput("Reading selected file: " + selectedFile.getAbsolutePath());
-                        List<CommandObject> commandObjectList = CommandObjectFileParser.getParser()
-                                .fromJson(new FileReader(selectedFile), new TypeToken<List<CommandObject>>(){}.getType());
+                        List<CommandObject> commandObjectList = new Gson().fromJson(new FileReader(selectedFile), new TypeToken<List<CommandObject>>(){}.getType());
                         burpExtender.getCallbacks().printOutput("Adding " + commandObjectList.size() + " items to table...");
                         sendToTable.removeAll();
                         sendToTable.addCommandObjects(commandObjectList);
@@ -88,7 +87,7 @@ class SendToTabSettingsContextMenu extends JPopupMenu {
                 int userSelection = fileChooser.showSaveDialog(getParent());
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     File fileToSave = fileChooser.getSelectedFile();
-                    String json = CommandObjectFileParser.getParser().toJson(sendToTable.getCommandObjects());
+                    String json = new Gson().toJson(sendToTable.getCommandObjects());
                     try (PrintWriter out = new PrintWriter(fileToSave)) {
                         out.write(json);
                     } catch (FileNotFoundException e1) {

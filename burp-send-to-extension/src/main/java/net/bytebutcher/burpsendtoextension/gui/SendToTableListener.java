@@ -13,18 +13,13 @@ import java.util.List;
 public class SendToTableListener implements TableModelListener {
 
     private SendToTable sendToTable;
-    private List<CommandsChangeListener> commandsChangeListeners = new ArrayList<CommandsChangeListener>();
 
-    public SendToTableListener(JTable table, SendToTable sendToTable, BurpExtender burpExtender) {
+    public SendToTableListener(SendToTable sendToTable) {
         this.sendToTable = sendToTable;
     }
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        List<CommandObject> commandObjects = sendToTable.getCommandObjects();
-        for (CommandsChangeListener commandsChangeListener : commandsChangeListeners) {
-            commandsChangeListener.commandsChanged(commandObjects);
-        }
         BurpExtender.getConfig().saveSendToTableData(sendToTable.getCommandObjects());
     }
 
@@ -46,10 +41,6 @@ public class SendToTableListener implements TableModelListener {
 
     public void onDownButtonClick(ActionEvent e) {
         sendToTable.moveSelectedRowDown();
-    }
-
-    public void registerCommandsChangeLister(CommandsChangeListener commandsChangeListener) {
-        commandsChangeListeners.add(commandsChangeListener);
     }
 
     public void onShowPreviewChange(ActionEvent e, String commandId, boolean showPreview) {

@@ -20,6 +20,7 @@ public class Placeholders {
                 new CookiesPlaceholder(),
                 new HostPlaceholder(),
                 new HttpBodyToFilePlaceholder(),
+                new HttpStatusCodePlaceholder(),
                 new HttpHeadersToFilePlaceholder(),
                 new HttpMethodPlaceholder(),
                 new HttpRequestResponsePlaceholder(),
@@ -52,15 +53,15 @@ public class Placeholders {
         return result;
     }
 
-    public static List<String> get(String format) {
+    public static List<CommandObject.Placeholder> get(String format) {
         List<String> validPlaceholders = Placeholders.get().stream().map(AbstractPlaceholder::getPlaceholder).collect(Collectors.toList());
-        List<String> placeholders = Lists.newArrayList();
+        List<CommandObject.Placeholder> placeholders = Lists.newArrayList();
         if (format != null && !format.isEmpty()) {
             Matcher m = Pattern.compile("(\\%[A-Z])").matcher(format);
             while (m.find()) {
                 String placeholder = m.group(1);
                 if (validPlaceholders.contains(placeholder)) {
-                    placeholders.add(placeholder);
+                    placeholders.add(new CommandObject.Placeholder(placeholder, null, m.start(), m.end()));
                 }
             }
         }

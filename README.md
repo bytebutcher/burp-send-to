@@ -19,6 +19,7 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 	* **%Q:** will be replaced with the url query
 	* **%C:** will be replaced with the cookies
 	* **%M:** will be replaced with the HTTP-method
+        * **%O:** will be replaced with the HTTP-status-code
 	* **%S:** will be replaced with the selected text
 	* **%F:** will be replaced with the path to a temporary file containing the selected text
 	* **%R:** will be replaced with the path to a temporary file containing the content of the focused request/response
@@ -32,7 +33,7 @@ New context-menu-entries can be added using the "Add"-button. Each entry consist
 ![Burp-Send-To-Extension Add-/Edit-Dialog](images/burp-send-to-extension-add-edit-dialog.png)
 
 In addition it is possible to customize how placeholders behave when multiple HTTP messages are selected by clicking the "Advanced"-button. 
-By default each selected HTTP message forms a separate command. However, it is also possible to join all values of a specific placeholder using a custom separator.
+By default each selected HTTP message forms a separate command. However, it is also possible to join all values of a specific placeholder using a custom separator, or to store all values of a specific placeholder within a file.
 
 ![Burp-Send-To-Extension Advanced-Dialog](images/burp-send-to-extension-advanced-dialog.png)
 

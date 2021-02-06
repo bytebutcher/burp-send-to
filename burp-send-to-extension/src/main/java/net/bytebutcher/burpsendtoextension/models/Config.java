@@ -6,32 +6,44 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
-import net.bytebutcher.burpsendtoextension.parser.CommandObjectFileParser;
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.CommandSeparatedPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.FileSeparatedPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.IPlaceholderBehaviour;
+import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.StringSeparatedPlaceholderBehaviour;
 import net.bytebutcher.burpsendtoextension.utils.OsUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Config {
 
     private final IBurpExtenderCallbacks callbacks;
+    private final Gson gson;
     private BurpExtender burpExtender;
-    private String version = "1.3";
+    private String version = "1.6";
 
     public Config(BurpExtender burpExtender) {
         this.burpExtender = burpExtender;
         this.callbacks = BurpExtender.getCallbacks();
+        this.gson = initGson();
         refreshVersion();
+    }
+
+    private Gson initGson() {
+        RuntimeTypeAdapterFactory<IPlaceholderBehaviour> placeholderBehaviourAdapterFactory = RuntimeTypeAdapterFactory.of(IPlaceholderBehaviour.class, "type")
+                .registerSubtype(StringSeparatedPlaceholderBehaviour.class, "StringSeparated")
+                .registerSubtype(CommandSeparatedPlaceholderBehaviour.class, "CommandSeparated")
+                .registerSubtype(FileSeparatedPlaceholderBehaviour.class, "FileSeparated");
+        return new GsonBuilder().registerTypeAdapterFactory(placeholderBehaviourAdapterFactory).create();
     }
 
     public void saveSendToTableData(List<CommandObject> sendToTableData) {
         this.callbacks.saveExtensionSetting("SendToTableData",
-                CommandObjectFileParser.getParser().toJson(sendToTableData));
+                gson.toJson(sendToTableData));
     }
 
     public List<CommandObject> getSendToTableData() {
-        List<CommandObject> commandObjectList = new ArrayList<>();
+        List<CommandObject> commandObjectList = Lists.newArrayList();
         try {
             String sendToTableData = this.callbacks.loadExtensionSetting("SendToTableData");
             if (sendToTableData == null || sendToTableData.isEmpty() || "[]".equals(sendToTableData)) {
@@ -41,8 +53,7 @@ public class Config {
                 }
                 return commandObjectList;
             }
-            return CommandObjectFileParser.getParser()
-                    .fromJson(sendToTableData, new TypeToken<List<CommandObject>>() {}.getType());
+            return gson.fromJson(sendToTableData, new TypeToken<List<CommandObject>>() {}.getType());
         } catch (Exception e) {
             BurpExtender.printErr("Error retrieving table data!");
             BurpExtender.printErr(e.toString());
@@ -63,38 +74,37 @@ public class Config {
         String groupSQL = "sql";
         String groupSSL = "ssl";
         String groupOther = "other";
-        List<PlaceholderBehaviour> defaultPlaceholderBehaviour = Lists.newArrayList();
         return Lists.newArrayList(
                 // cms
-                new CommandObject("droopescan", "droopescan scan drupal -u %U -t 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("mooscan", "mooscan -v --url %U", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("wpscan", "wpscan --url %U --threads 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("droopescan", "droopescan scan drupal -u %U -t 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("mooscan", "mooscan -v --url %U", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("wpscan", "wpscan --url %U --threads 10", groupCMS, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
                 // fuzz
-                new CommandObject("bfac", "bfac --url %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("gobuster", "gobuster -u %U -s 403,404 -w /usr/share/wfuzz/wordlist/general/common.txt", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("nikto", "nikto %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("wfuzz", "wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt --hc 404,403 %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("bfac", "bfac --url %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("gobuster", "gobuster -u %U -s 403,404 -w /usr/share/wfuzz/wordlist/general/common.txt", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("nikto", "nikto %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("wfuzz", "wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt --hc 404,403 %U", groupFuzz, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
                 // sql
-                new CommandObject("sqlmap (GET)", "sqlmap -o -u %U --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("sqlmap (POST)", "sqlmap -r %R  --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("sqlmap (GET)", "sqlmap -o -u %U --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("sqlmap (POST)", "sqlmap -r %R  --level=5 --risk=3", groupSQL, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
                 // ssl
-                new CommandObject("sslscan", "sslscan %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
+                new CommandObject("sslscan", "sslscan %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("sslyze", "sslyze --regular %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("testssl", "testssl.sh %H:%P", groupSSL, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
                 // other
-                new CommandObject("Host (%H)", "echo %H", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("Port (%P)", "echo %P", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("Protocol (%T)", "echo %T", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL (%U)", "echo %U", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Path (%A)", "echo %A", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("Cookies (%C)", "echo %C", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("Selected text (%S)", "echo %S", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour),
-                new CommandObject("HTTP-Body as file (%B)", "echo %B && cat %B", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true, defaultPlaceholderBehaviour)
+                new CommandObject("Host (%H)", "echo %H", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("Port (%P)", "echo %P", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("Protocol (%T)", "echo %T", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("URL (%U)", "echo %U", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("URL-Path (%A)", "echo %A", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("URL-Query (%Q)", "echo %Q", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("Cookies (%C)", "echo %C", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("HTTP-Method (%M)", "echo %M", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("Selected text (%S)", "echo %S", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("Selected text as file (%F)", "echo %F && cat %F", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("HTTP-Request/-Response as file (%R)", "echo %R && cat %R", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("HTTP-Headers as file (%E)", "echo %E && cat %E", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true),
+                new CommandObject("HTTP-Body as file (%B)", "echo %B && cat %B", groupOther, ERuntimeBehaviour.RUN_IN_TERMINAL, true)
         );
     }
 

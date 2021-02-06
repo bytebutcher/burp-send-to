@@ -1,6 +1,7 @@
 package net.bytebutcher.burpsendtoextension.gui.action;
 
 import burp.BurpExtender;
+import net.bytebutcher.burpsendtoextension.builder.CommandBuilder;
 import net.bytebutcher.burpsendtoextension.executioner.CommandExecutioner;
 import net.bytebutcher.burpsendtoextension.gui.SendToPreviewDialog;
 import net.bytebutcher.burpsendtoextension.gui.SendToRunInTerminalBehaviourChoiceDialog;
@@ -35,7 +36,7 @@ public class SendToContextMenuItemAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            String command = commandObject.getCommand(placeholders, context);
+            String command = new CommandBuilder(commandObject, placeholders, context).build();
             if (commandObject.shouldShowPreview()) {
                 command = showSendToPreviewDialog(commandObject.getId(), command);
             }

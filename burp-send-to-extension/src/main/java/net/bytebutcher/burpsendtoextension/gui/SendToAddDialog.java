@@ -10,7 +10,6 @@ import net.bytebutcher.burpsendtoextension.gui.util.DialogUtil;
 import net.bytebutcher.burpsendtoextension.models.CommandObject;
 import net.bytebutcher.burpsendtoextension.models.ERuntimeBehaviour;
 import net.bytebutcher.burpsendtoextension.models.Placeholders;
-import net.bytebutcher.burpsendtoextension.models.placeholder.behaviour.PlaceholderBehaviour;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -40,7 +39,7 @@ public class SendToAddDialog {
 
     // This list is used to check whether the currently entered command object already exists (duplicate-check).
     private List<CommandObject> commandObjects;
-    private List<PlaceholderBehaviour> placeholderBehaviourList = Lists.newArrayList();
+    private List<CommandObject.Placeholder> placeholders = Lists.newArrayList();
 
     public SendToAddDialog(JFrame parent, String title, List<CommandObject> commandObjects) {
         this.commandObjects = commandObjects;
@@ -60,7 +59,7 @@ public class SendToAddDialog {
         chkRunInBackground.setSelected(commandObject.shouldRunInBackground());
         chkRunInTerminal.setSelected(commandObject.shouldRunInTerminal());
         chkOutputShouldReplaceSelection.setSelected(commandObject.shouldOutputReplaceSelection());
-        placeholderBehaviourList = Lists.newArrayList(commandObject.getPlaceholderBehaviourList());
+        placeholders = Lists.newArrayList(commandObject.getPlaceholders());
     }
 
     private void initKeyboardShortcuts() {
@@ -97,10 +96,10 @@ public class SendToAddDialog {
             }
         });
         btnAdvanced.addActionListener((e) -> {
-            placeholderBehaviourList = getCommandObject().getPlaceholderBehaviourList();
-            SendToAddAdvancedDialog dialog = new SendToAddAdvancedDialog(this.dialog, placeholderBehaviourList);
+            placeholders = getCommandObject().getPlaceholders();
+            SendToAddAdvancedDialog dialog = new SendToAddAdvancedDialog(this.dialog, placeholders);
             if (dialog.run()) {
-                placeholderBehaviourList = dialog.getPlaceholderBehaviourList();
+                placeholders = dialog.getPlaceholders();
             }
         });
         onOkActionListener = new AbstractAction() {
@@ -153,6 +152,7 @@ public class SendToAddDialog {
                 "<p>%Q = URL-Query</p>" +
                 "<p>%C = Cookies</p>" +
                 "<p>%M = HTTP-Method</p>" +
+                "<p>%O = HTTP-Status-Code</p>" +
                 "<p>%S = Selected text</p>" +
                 "<p>%F = Path to file containing selected text</p>" +
                 "<p>%R = Path to file containing HTTP-request/-response</p>" +
@@ -216,12 +216,12 @@ public class SendToAddDialog {
         return chkShowPreviewPriorToExecution.isSelected();
     }
 
-    private List<PlaceholderBehaviour> getPlaceholderBehaviourList() {
-        return placeholderBehaviourList;
+    private List<CommandObject.Placeholder> getPlaceholders() {
+        return placeholders;
     }
 
     public CommandObject getCommandObject() {
-        return new CommandObject(getName(), getCommand(), getGroup(), getRuntimeBehaviour(), shouldShowPreview(), getPlaceholderBehaviourList());
+        return new CommandObject(getName(), getCommand(), getGroup(), getRuntimeBehaviour(), shouldShowPreview(), getPlaceholders());
     }
 
     {

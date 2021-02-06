@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group 'net.bytebutcher'
-version '1.5'
+version '1.6'
 
 sourceCompatibility = 1.8
 
