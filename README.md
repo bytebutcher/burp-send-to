@@ -65,6 +65,11 @@ Usually the options of the "Send to"-Tab are saved automatically. However, if yo
 
 ![Burp-Send-To-Extension Options](images/burp-send-to-extension-options.png)
 
+## Extending the Extension
+
+In some instances the provided placeholders may not be enough. In order to work around this issue you may use a little ```wrapper-script```.
+See the [Wiki Page](https://github.com/bytebutcher/burp-send-to/wiki/Examples) for some common examples.
+
 ## Security Notes
 
 Executing commands based on untrusted input always introduces the risk of command injection. This is especially true when using the **%S** placeholder. Thus it is recommended to always activate the **Show preview** option when using the **%S** placeholder and closely analyse commands in the preview window prior to execution.
