@@ -67,8 +67,7 @@ Usually the options of the "Send to"-Tab are saved automatically. However, if yo
 
 ## Extending the Extension
 
-In some instances the provided placeholders may not be enough. In order to work around this issue you may use a little ```wrapper-script```.
-See the [Wiki Page](https://github.com/bytebutcher/burp-send-to/wiki/Examples) for some common examples.
+Not satisfied yet? The [Wiki Page](https://github.com/bytebutcher/burp-send-to/wiki/Examples) lists some additional context-menu entries which might come in handy.
 
 ## Security Notes
 
